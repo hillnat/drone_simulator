@@ -7,22 +7,20 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour, IPunObservable
 {
     private int droneType=-1; //gets set by spawner, so we know which model to create
-	bool initialSetupComplete => droneType != -1;
 	private string[] dronePrefabNames = new string[3] { "basicDrone", "raceDrone", "tinyWhoop" };
 	public Drone drone;
 	public PlayerSettings playerSettings;
 	public PhotonView view;
-	private Camera playerCamera;
+    [HideInInspector] public Camera playerCamera;
 	private Rigidbody rb;
 	private AudioSource aS;
 	private BoxCollider mainCollider;
 	private float zeroDistance = 0;
-	private SkyCam skyCam;
 	private Vector3 positionLastFrame = Vector3.zero;
 	public LayerMask groundEffectLayerMask;
-	#region Post FX
-	PostProcessLayer postProcessLayer;
-	PostProcessVolume postProcessVolume;
+    #region Post FX
+    [HideInInspector] public PostProcessLayer postProcessLayer;
+    [HideInInspector]public PostProcessVolume postProcessVolume;
 	#endregion
 	#region Inputs
 	private Vector3 scaledInputs =Vector3.zero;
@@ -30,7 +28,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     #endregion
     #region UI References
     public GameObject allUI;
-	private bool angleIconsEnabled
+	public bool angleIconsEnabled
 	{
 		get { return _angleIconsEnabled; }
 		set { _angleIconsEnabled = value; for (int i = 0; i < angleIcons.Length; i++) { angleIcons[i].gameObject.SetActive(_angleIconsEnabled); } }
@@ -38,33 +36,25 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private bool _angleIconsEnabled = true;
 	public RectTransform[] angleIcons = new RectTransform[5];
 	public Canvas mainUICanvas;
-	public Canvas settingsCanvas;    //Store all settings fields for settings default values
     public TMP_Text nametag;
     public TMP_Text MAINUI_speedText;
 	public TMP_Text MAINUI_nameText;
 	public TMP_Text MAINUI_altitudeText;
 	public TMP_Text MAINUI_fpsText;
-	public TMP_InputField SETTINGSUI_camOffsetYInputField;
-	public TMP_InputField SETTINGSUI_camOffsetZInputField;
-	public TMP_InputField SETTINGSUI_camAngleInputField;
-	public TMP_InputField SETTINGSUI_nameInputField;
-	public Slider SETTINGSUI_soundFXSlider;
-	public Slider SETTINGSUI_qualitySlider;
-	public Toggle SETTINGSUI_PostFXToggle;
-	public Toggle SETTINGSUI_AngleIconsToggle;
+	
 	#endregion 
 	#region Trails
 	private TrailRenderer trailRenderer;
-	private Color[] trailColors = new Color[5]{
-		Color.red, Color.green, Color.blue, Color.magenta, Color.yellow
-	};
-	private int curTrailColor
+	private Color[] colors = new Color[9]{
+		Color.red, Color.green, Color.blue, Color.magenta, Color.yellow, Color.blue+Color.white/2, Color.red+Color.white/2,Color.green+Color.white/2,Color.magenta+Color.white/2
+    };
+	private int curColor
 	{
 		get { return _curTrailColor; }
 		set {
 			//Clamp and set
-			if (value >= trailColors.Length) { _curTrailColor = 0; } 
-			else if (value < 0) { _curTrailColor = trailColors.Length - 1; } 
+			if (value >= colors.Length) { _curTrailColor = 0; } 
+			else if (value < 0) { _curTrailColor = colors.Length - 1; } 
 			else { _curTrailColor = value; } 
 		}
 	}
@@ -127,33 +117,23 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (view.IsMine)
 		{
 			drone = null;
-			//Set quality settings
-			QualitySettings.SetQualityLevel(2, true);
+
             //Setup camera    
             playerCamera.transform.parent = transform; 
 			playerCamera.transform.localEulerAngles = new Vector3(playerSettings.cameraAngle, 0, 0);
-			//Setup skycam
-			skyCam = GameObject.FindWithTag("SkyCam").GetComponent<SkyCam>();    
-			skyCam.target = this;
 			//Setup trail
-			curTrailColor = Random.Range(0, trailColors.Length);
-			trailRenderer.startColor = trailColors[curTrailColor];
-			trailRenderer.endColor = trailColors[curTrailColor];
+			curColor = Random.Range(0, colors.Length);
+			trailRenderer.startColor = colors[curColor];
+			trailRenderer.endColor = colors[curColor];
 			//Set UI stuff
 			view.RPC("SetName", RpcTarget.AllBufferedViaServer, "Player" + $"{view.ViewID}");
 			angleIconsEnabled = true;
-			settingsCanvas.gameObject.SetActive(false);
-			SetSettingsUIDefaultValues();
-			//Setup chat
-            ChatManager.instance.localPlayerID = view.ViewID;
-
 			//Move to spawn
-			transform.position = GameManager.spawn;
+			transform.position = GameStats.spawn;
 		}
 		else
 		{
 			Destroy(mainUICanvas.gameObject);
-			Destroy(settingsCanvas.gameObject);
 			Destroy(GetComponentInChildren<Camera>().gameObject);
 			Destroy(rb);
 			Destroy(mainCollider);
@@ -161,7 +141,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
 	private void FixedUpdate()
 	{
-		if (view.IsMine && initialSetupComplete) {            
+		if (view.IsMine && drone!=null) {            
 			ApplyForces();
 			HandleHudUI();
 			positionLastFrame = transform.position;
@@ -169,7 +149,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
 	private void Update()
 	{
-		if (view.IsMine && initialSetupComplete) {
+		if (view.IsMine && drone != null) {
 			CalculateInputs();
 			SpinPropellors();
 			HandleSounds();
@@ -205,8 +185,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
             playerCamera.fieldOfView = drone.droneStats.fieldOfView;
             mainCollider.size = drone.droneStats.colliderSize;
             mainCollider.center = drone.droneStats.colliderCenter;
+			aS.Play();
 			allUI.SetActive(true);
-			SetSettingsUIDefaultValues();
+			SettingsManager.instance.SetDefaultValues();
         }
     }
 	[PunRPC]
@@ -223,11 +204,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
         name = newName;
 	}
     [PunRPC]
-	void SetTrailColor(int color)
+	void SetColor(int color)
 	{
-		curTrailColor = color;
-		trailRenderer.startColor = trailColors[curTrailColor];
-		trailRenderer.endColor = trailColors[curTrailColor];
+		curColor = color;
+		nametag.color = colors[curColor];
+		trailRenderer.startColor = colors[curColor];
+		trailRenderer.endColor = colors[curColor];
 	}
 	[PunRPC]
 	void ToggleTrail(bool state)
@@ -237,19 +219,20 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	#endregion
 	void HandleSounds() {
 		aS.pitch = 1.2f+(throttle/200);
+		aS.volume = SettingsManager.instance.playerSettings.masterVolume * SettingsManager.instance.playerSettings.soundFxVolume;
 	}
 	void HandleOtherInputs()
 	{
 		zeroDistance = Mathf.Abs(Vector2.Distance(Vector2.zero, new Vector2(transform.position.x, transform.position.z)));
-		if (InputManager.instance.respawn || (zeroDistance > GameManager.worldSize || transform.position.y < -1)){ Respawn(); }//This also handles 0 distance respawn
-		if (InputManager.instance.toggleSkycam) { skyCam.enabled = !skyCam.enabled; }
+		if (InputManager.instance.respawn || (zeroDistance > GameStats.worldSize || transform.position.y < -1)){ Respawn(); }//This also handles 0 distance respawn
+		if (InputManager.instance.toggleSkycam) { SkyCam.instance.skyCam.enabled = !SkyCam.instance.skyCam.enabled; }
 		if (InputManager.instance.toggleTrail) { view.RPC("ToggleTrail", RpcTarget.AllBufferedViaServer, !trailRenderer.enabled); }
-		if (InputManager.instance.openMenu) { settingsCanvas.gameObject.SetActive(!settingsCanvas.gameObject.activeInHierarchy); }
-		if (InputManager.instance.setSpawn && zeroDistance < GameManager.worldSize - 10 && transform.position.y >= 0) { GameManager.spawn = transform.position; GameManager.spawnRotation = transform.rotation; }
+		if (InputManager.instance.openMenu) { SettingsManager.instance.ToggleUI(); }
+		if (InputManager.instance.setSpawn && zeroDistance < GameStats.worldSize - 10 && transform.position.y >= 0) { GameStats.spawn = transform.position; GameStats.spawnRotation = transform.rotation; }
 		if (InputManager.instance.flip) { transform.rotation = Quaternion.identity; }
 		if (InputManager.instance.toggleChat) { ChatManager.instance.OpenChat(); }
-		if (InputManager.instance.trailColor) {
-			view.RPC("SetTrailColor", RpcTarget.AllBufferedViaServer, curTrailColor++);
+		if (InputManager.instance.color) {
+			view.RPC("SetColor", RpcTarget.AllBufferedViaServer, curColor++);
 		}    
 	}
 	private void CalculateInputs()
@@ -267,7 +250,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1; }
 		rawInputs.x *= -1;
 		//Throttle cant be negative, so clamp01
-		throttle = drone.droneStats.throttleModifier * GameManager.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(Mathf.Clamp01(InputManager.instance.throttleInput));
+		throttle = drone.droneStats.throttleModifier * GameStats.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(Mathf.Clamp01(InputManager.instance.throttleInput));
 	}
 	private void ApplyForces()
 	{
@@ -276,9 +259,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		//Check ground effect
 		bool groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.75f, groundEffectLayerMask);
 		//Apply throttle
-		Vector3 throttleVector = transform.up * throttle * (groundEffect ? GameManager.groundEffectMultiplier : 1f) * Time.fixedDeltaTime;
+		Vector3 throttleVector = transform.up * throttle * (groundEffect ? GameStats.groundEffectMultiplier : 1f) * Time.fixedDeltaTime;
 		rb.AddForce(throttleVector);
-		rb.AddForce(Vector3.down * GameManager.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);//fake more gravity
+		rb.AddForce(Vector3.down * GameStats.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);//fake more gravity
 	}
 	private void SpinPropellors()
 	{
@@ -290,97 +273,31 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	{
 		rb.velocity = Vector3.zero;
 		rb.angularVelocity = Vector3.zero;
-		transform.position = GameManager.spawn;
-		transform.rotation = GameManager.spawnRotation;
+		transform.position = GameStats.spawn;
+		transform.rotation = GameStats.spawnRotation;
 	}
     #region UI
     void HandleHudUI()
     {
         MAINUI_speedText.text = $"m/s {((transform.position - positionLastFrame).magnitude / Time.fixedDeltaTime):F1}";
         MAINUI_altitudeText.text = $"alt {transform.position.y:F1}m";
-        //Set the position of the UI angle icon bars
-        if (angleIconsEnabled)
-        {
+		//Set the position of the UI angle icon bars
+		if (angleIconsEnabled)
+		{
             float angleIconRiseAmount = transform.rotation.eulerAngles.z;
-            if (angleIconRiseAmount > 180) { angleIconRiseAmount -= 360; }//Account for flipping
-            angleIconRiseAmount /= 2;
-            for (int i = 0; i < 5; i++)
-            {
-                if (i == 2) { continue; }//Skip middle bar, stays put. Although keep it in the array for other math
-                angleIcons[i].anchoredPosition = new Vector2(angleIcons[i].anchoredPosition.x, (angleIconRiseAmount * (i > 2 ? -1 : 1)) * Mathf.Abs(i - 2));
-            }
-        }
+			if (angleIconRiseAmount > 180) { angleIconRiseAmount -= 360; }//Account for flipping
+			angleIconRiseAmount /= 2;
+			for (int i = 0; i < 5; i++)
+			{
+				if (i == 2) { continue; }//Skip middle bar, stays put. Although keep it in the array for other math
+				angleIcons[i].anchoredPosition = new Vector2(angleIcons[i].anchoredPosition.x, (angleIconRiseAmount * (i > 2 ? -1 : 1)) * Mathf.Abs(i - 2));
+			}
+		}
         //(amount * mod) : get initial height, with proper sign
         //* Mathf.Abs(i-2) : multiply by i's distance from the middle point of the array. ie becasue out of 0-4, 2 is the center number, 0 and 4 would output a multiplier of 2, and 1 and 3 output a multiplier of 1
         //(i>2?-1:1) flip if over halfway through iterations
     }
-    private void SetSettingsUIDefaultValues()
-	{
-		if (!view.IsMine) { return; }
-		if (drone != null && drone.droneStats !=null)
-		{
-			//Note setting input field value like this still invokes any callbacks on the input field
-            SETTINGSUI_camOffsetYInputField.text = $"{drone.droneStats.cameraOffset.y}";
-            SETTINGSUI_camOffsetZInputField.text = $"{drone.droneStats.cameraOffset.z}";
-        }
-		
-		SETTINGSUI_camAngleInputField.text = $"{playerSettings.cameraAngle}";
-		SETTINGSUI_nameInputField.text = $"{name}";
-		SETTINGSUI_soundFXSlider.value = aS.volume;
-		SETTINGSUI_PostFXToggle.isOn = postProcessVolume.enabled;
-		SETTINGSUI_AngleIconsToggle.isOn = angleIconsEnabled;
-		SETTINGSUI_qualitySlider.value = QualitySettings.GetQualityLevel();
-	}
+    
     #endregion
-    #region UI Callbacks
-    public void UICALLBACK_TogglePostFX()
-    {
-        postProcessVolume.enabled = !postProcessVolume.enabled;
-        postProcessLayer.enabled = !postProcessLayer.enabled;
-    }
-    public void UICALLBACK_SoundFXVolume(float v)
-    {
-        aS.volume = v;
-    }
-    public void UICALLBACK_ToggleAngleIcons()
-    {
-        angleIconsEnabled = !angleIconsEnabled;
-    }
-    public void UICALLBACK_ChangeCamAngle(string c)
-    {
-        float v;
-        if (float.TryParse(c, out v))
-        {
-            playerSettings.cameraAngle = v;
-            playerCamera.transform.localEulerAngles = new Vector3(playerSettings.cameraAngle, 0, 0);
-        }
-    }
-    public void UICALLBACK_ChangeCamOffsetY(string c)
-    {
-        float v;
-        if (float.TryParse(c, out v))
-        {
-            drone.droneStats.cameraOffset.y = v;
-            playerCamera.transform.localPosition = drone.droneStats.cameraOffset;
-        }
-    }
-    public void UICALLBACK_ChangeCamOffsetZ(string c)
-    {
-        float v;
-        if (float.TryParse(c, out v))
-        {
-            drone.droneStats.cameraOffset.z = v;
-            playerCamera.transform.localPosition = drone.droneStats.cameraOffset;
-        }
-    }
-    public void UICALLBACK_ChangeName(string v)
-    {
-        name = v;
-        MAINUI_nameText.text = name;
-    }
-    public void UICALLBACK_ChangeQuality(float v)
-    {
-        QualitySettings.SetQualityLevel(Mathf.Clamp((int)v, 0, 3), true);
-    }
-    #endregion
+    
 }

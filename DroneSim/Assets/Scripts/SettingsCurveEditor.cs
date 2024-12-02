@@ -12,7 +12,6 @@ public enum PairableCurves
 }
 public class SettingsCurveEditor : MonoBehaviour
 {
-    private PlayerController pc;
     private GraphicRaycaster gR;
     private EventSystem eR;
     public RectTransform[] keys = new RectTransform[10];
@@ -28,7 +27,6 @@ public class SettingsCurveEditor : MonoBehaviour
     {
         gR = GetComponentInParent<GraphicRaycaster>();
         eR = InputManager.instance.GetComponent<EventSystem>();
-        pc=GetComponentInParent<PlayerController>();
         UpdatePairedCurve();
         UpdateVisualKeys();//align keys to what the anim curve has
         CalculateCurve();//calculate for line renderer
@@ -102,15 +100,15 @@ public class SettingsCurveEditor : MonoBehaviour
         switch (pairedCurve)
         {
             case PairableCurves.PitchRoll:
-                curve = pc.playerSettings.pitchRollCurve;
+                curve = SettingsManager.instance.playerSettings.pitchRollCurve;
                 label.text = "Pitch & Roll";
                 break;
             case PairableCurves.Yaw:
-                curve = pc.playerSettings.yawCurve;
+                curve = SettingsManager.instance.playerSettings.yawCurve;
                 label.text = "Yaw";
                 break;
             case PairableCurves.Throttle:
-                curve = pc.playerSettings.throttleCurve;
+                curve = SettingsManager.instance.playerSettings.throttleCurve;
                 label.text = "Throttle";
                 break;
             default:

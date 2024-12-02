@@ -78,7 +78,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TrailColor",
+                    "name": "Color",
                     "type": "Button",
                     "id": "5947e533-798d-49c5-8e48-c93d935a4510",
                     "expectedControlType": "Button",
@@ -386,7 +386,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "TrailColor",
+                    "action": "Color",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

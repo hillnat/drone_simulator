@@ -14,7 +14,6 @@ public class ChatManager : MonoBehaviour
     [SerializeField] private TMP_Text chatText;
     [SerializeField] private TMP_InputField chatInput;
     private List<string> chatList = new List<string>();
-    public int localPlayerID;
     private int holdChatOpenTime = 5;
     private float time = 0;
     void Awake()
@@ -24,6 +23,7 @@ public class ChatManager : MonoBehaviour
         time = holdChatOpenTime+1;
         chatText.text = "";
         chatInput.text = "";
+        chatCanvas.enabled = true;
         inputOpen = false;
     }
 
@@ -68,7 +68,7 @@ public class ChatManager : MonoBehaviour
     public void UICALLBACK_AddChatMessage(string v)
     {
         if (v == "") { return; }
-        view.RPC("AddChatMessage", RpcTarget.All, $"{PhotonView.Find(localPlayerID).name} : {v}");
+        view.RPC("AddChatMessage", RpcTarget.All, $"{GameManager.instance.localPlayer.name} : {v}");
         chatInput.text = "";
         inputOpen = false;
     }

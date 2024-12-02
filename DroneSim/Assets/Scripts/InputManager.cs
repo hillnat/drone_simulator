@@ -9,7 +9,7 @@ public class InputManager : MonoBehaviour
     public bool respawn = false;
     public bool toggleSkycam = false;
     public bool toggleTrail = false;
-    public bool trailColor = false;
+    public bool color = false;
     public bool clickUp = false;
     public bool openMenu = false;
     public bool setSpawn = false;
@@ -32,7 +32,7 @@ public class InputManager : MonoBehaviour
         if(respawn) { respawn = false; }
         if(toggleSkycam) { toggleSkycam = false; }
         if(toggleTrail) { toggleTrail = false; }
-        if(trailColor) { trailColor = false; }
+        if(color) { color = false; }
         if(clickUp) { clickUp = false; }
         if(openMenu) { openMenu = false; }
         if(setSpawn) { setSpawn = false; }
@@ -51,7 +51,7 @@ public class InputManager : MonoBehaviour
     private void OnToggleSkyCam() { toggleSkycam = true; }
     private void OnSkipTime() { Sun.instance.SkipTime(); }
     private void OnToggleTrail() { toggleTrail = true; }
-    private void OnTrailColor() { trailColor = true; }
+    private void OnColor() { color = true; }
     private void OnMousePosition(InputValue iv) { mousePosition = iv.Get<Vector2>(); }
     private void OnMenu() { openMenu = true; }
     private void OnSetRespawn() { setSpawn = true; }

@@ -4,34 +4,40 @@ using UnityEngine;
 
 public class SkyCam : MonoBehaviour
 {
-    private Camera cam;
+    public static SkyCam instance;
+    public Camera skyCam;
     private Vector2 fovLimits = new Vector2(1, 150);
-    public PlayerController target;
 
     private void Awake()
     {
-        cam=GetComponent<Camera>();      
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        skyCam =GetComponent<Camera>();
+        transform.position = new Vector3(0, 75, 0);
     }
-    private void Start()
-    {
-        cam.enabled = target != null;
-    }
+
     private void FixedUpdate()
     {
-        if(target != null && target.drone!=null)
+        if(GameManager.instance.localPlayer.drone!=null)
         {
-            if(!cam.enabled) { cam.enabled = true; }
-            cam.fieldOfView = Mathf.Clamp(-(Vector3.Distance(transform.position, target.transform.position)) / 10, fovLimits.x, fovLimits.y);
-            transform.LookAt(target.transform.position);
+            if(!skyCam.enabled) { skyCam.enabled = true; }
+            skyCam.fieldOfView = Mathf.Clamp(-(Vector3.Distance(transform.position, GameManager.instance.localPlayer.transform.position)) / 10, fovLimits.x, fovLimits.y);
+            transform.LookAt(GameManager.instance.localPlayer.transform.position);
         }
-        else if (cam.enabled) { cam.enabled = false; }
+        else if (skyCam.enabled) { skyCam.enabled = false; }
     }
     private void OnDisable()
     {
-        cam.enabled = false;
+        skyCam.enabled = false;
     }
     private void OnEnable()
     {
-        cam.enabled=true;
+        skyCam.enabled=true;
     }
 }

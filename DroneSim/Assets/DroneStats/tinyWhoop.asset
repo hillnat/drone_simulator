@@ -15,7 +15,7 @@ MonoBehaviour:
   weight: 45
   drag: 1
   angularDrag: 30
-  throttleModifier: 1
+  throttleModifier: 3
   yawSpeedModifier: 0.01
   pitchRollModifier: 0.005
   fieldOfView: 90

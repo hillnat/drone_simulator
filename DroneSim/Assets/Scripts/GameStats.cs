@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public static class GameManager
+public static class GameStats
 {
     public static float additionalGravity = 1.5f;
     public static float groundEffectMultiplier = 1.325f;

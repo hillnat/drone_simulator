@@ -41,7 +41,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public TMP_Text MAINUI_nameText;
 	public TMP_Text MAINUI_altitudeText;
 	public TMP_Text MAINUI_fpsText;
-	
+	public RawImage VR_leftEye;
+	public RawImage VR_rightEye;
 	#endregion 
 	#region Trails
 	private TrailRenderer trailRenderer;
@@ -60,6 +61,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
 	private int _curTrailColor = 0;
 	#endregion
+	public bool vrEditMode = false;
+
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -142,10 +145,17 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private void FixedUpdate()
 	{
 		if (view.IsMine && drone!=null) {            
-			ApplyForces();
 			HandleHudUI();
 			positionLastFrame = transform.position;
-		}
+			if (vrEditMode)
+			{
+				HandleVR_EditMode();
+			}
+			else
+			{
+                ApplyForces();
+            }
+        }
 	}
 	private void Update()
 	{
@@ -269,6 +279,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			drone.propellors[i].transform.localEulerAngles = new Vector3(0, 0, drone.propellors[i].transform.localEulerAngles.z + 6000 * Time.deltaTime * (InputManager.instance.throttleInput + 3));
 		}
 	}
+	public void HandleVR_EditMode() {
+        if (InputManager.instance.directionalInputs.x != 0f || InputManager.instance.directionalInputs.z != 0) { ChangeEyePos(new Vector2(-InputManager.instance.directionalInputs.z, InputManager.instance.directionalInputs.x)); }
+        if (InputManager.instance.directionalInputs.y != 0f) { ChangeEyeSize(InputManager.instance.directionalInputs.y / 300f); }
+    }
+
 	public void Respawn()
 	{
 		rb.velocity = Vector3.zero;
@@ -297,7 +312,33 @@ public class PlayerController : MonoBehaviour, IPunObservable
         //* Mathf.Abs(i-2) : multiply by i's distance from the middle point of the array. ie becasue out of 0-4, 2 is the center number, 0 and 4 would output a multiplier of 2, and 1 and 3 output a multiplier of 1
         //(i>2?-1:1) flip if over halfway through iterations
     }
-    
+
+	#endregion
+	#region VR
+	public void ChangeEyePos(Vector2 amount)
+	{
+		VR_rightEye.transform.Translate(VR_rightEye.transform.right * amount.x);
+		VR_rightEye.transform.Translate(VR_rightEye.transform.up * amount.y);
+		VR_leftEye.transform.Translate(-VR_leftEye.transform.right * amount.x);
+		VR_leftEye.transform.Translate(VR_leftEye.transform.up * amount.y);
+
+        SettingsManager.instance.playerSettings.eyePosition = VR_rightEye.transform.localPosition;
+
+    }
+    public void ChangeEyeSize(float amount)
+    {
+		VR_rightEye.transform.localScale += Vector3.one * amount;
+        VR_leftEye.transform.localScale += Vector3.one * amount;
+
+		SettingsManager.instance.playerSettings.eyeSize = VR_rightEye.transform.localScale;
+    }
+	public void SetVRDefaults()
+	{
+		Vector3 pos = SettingsManager.instance.playerSettings.eyePosition;
+        VR_rightEye.transform.localPosition = pos;
+        VR_leftEye.transform.localPosition = new Vector3(-pos.x, pos.y, pos.z);//Flip offset for left side
+        VR_rightEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
+        VR_leftEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
+    }
     #endregion
-    
 }

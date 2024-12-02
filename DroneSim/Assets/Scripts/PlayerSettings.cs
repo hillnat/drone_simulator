@@ -11,4 +11,6 @@ public class PlayerSettings : ScriptableObject
     public AnimationCurve yawCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
     public float masterVolume = 1f;
     public float soundFxVolume = 1f;
+    public Vector3 eyeSize = Vector3.one;
+    public Vector3 eyePosition = Vector3.zero;
 }

@@ -57,5 +57,8 @@ public class InputManager : MonoBehaviour
     private void OnSetRespawn() { setSpawn = true; }
     private void OnFlip() { flip = true; }
     private void OnToggleChat() { toggleChat = true; }
-
+    private void OnVR_Edit()
+    {
+        GameManager.instance.localPlayer.vrEditMode = !GameManager.instance.localPlayer.vrEditMode;
+    }
 }

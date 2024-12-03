@@ -62,7 +62,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private int _curTrailColor = 0;
 	#endregion
 	public bool vrEditMode = false;
-
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -132,7 +131,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			view.RPC("SetName", RpcTarget.AllBufferedViaServer, "Player" + $"{view.ViewID}");
 			angleIconsEnabled = true;
 			//Move to spawn
-			transform.position = GameStats.spawn;
+			transform.position = GameManager.instance.levelRules.spawn;
 		}
 		else
 		{
@@ -234,11 +233,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	void HandleOtherInputs()
 	{
 		zeroDistance = Mathf.Abs(Vector2.Distance(Vector2.zero, new Vector2(transform.position.x, transform.position.z)));
-		if (InputManager.instance.respawn || (zeroDistance > GameStats.worldSize || transform.position.y < -1)){ Respawn(); }//This also handles 0 distance respawn
+		if (InputManager.instance.respawn || (zeroDistance > GameManager.instance.levelRules.worldSize || transform.position.y < -1)){ Respawn(); }//This also handles 0 distance respawn
 		if (InputManager.instance.toggleSkycam) { SkyCam.instance.skyCam.enabled = !SkyCam.instance.skyCam.enabled; }
 		if (InputManager.instance.toggleTrail) { view.RPC("ToggleTrail", RpcTarget.AllBufferedViaServer, !trailRenderer.enabled); }
 		if (InputManager.instance.openMenu) { SettingsManager.instance.ToggleUI(); }
-		if (InputManager.instance.setSpawn && zeroDistance < GameStats.worldSize - 10 && transform.position.y >= 0) { GameStats.spawn = transform.position; GameStats.spawnRotation = transform.rotation; }
+		if (InputManager.instance.setSpawn && zeroDistance < GameManager.instance.levelRules.worldSize - 10 && transform.position.y >= 0) { GameManager.instance.levelRules.spawn = transform.position; GameManager.instance.levelRules.spawnRotation = transform.rotation; }
 		if (InputManager.instance.flip) { transform.rotation = Quaternion.identity; }
 		if (InputManager.instance.toggleChat) { ChatManager.instance.OpenChat(); }
 		if (InputManager.instance.color) {
@@ -260,7 +259,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1; }
 		rawInputs.x *= -1;
 		//Throttle cant be negative, so clamp01
-		throttle = drone.droneStats.throttleModifier * GameStats.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(Mathf.Clamp01(InputManager.instance.throttleInput));
+		throttle = drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(Mathf.Clamp01(InputManager.instance.throttleInput));
 	}
 	private void ApplyForces()
 	{
@@ -269,9 +268,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		//Check ground effect
 		bool groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.75f, groundEffectLayerMask);
 		//Apply throttle
-		Vector3 throttleVector = transform.up * throttle * (groundEffect ? GameStats.groundEffectMultiplier : 1f) * Time.fixedDeltaTime;
+		Vector3 throttleVector = transform.up * throttle * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime;
 		rb.AddForce(throttleVector);
-		rb.AddForce(Vector3.down * GameStats.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);//fake more gravity
+		rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);//fake more gravity
 	}
 	private void SpinPropellors()
 	{
@@ -288,8 +287,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	{
 		rb.velocity = Vector3.zero;
 		rb.angularVelocity = Vector3.zero;
-		transform.position = GameStats.spawn;
-		transform.rotation = GameStats.spawnRotation;
+		transform.position = GameManager.instance.levelRules.spawn;
+		transform.rotation = GameManager.instance.levelRules.spawnRotation;
 	}
     #region UI
     void HandleHudUI()

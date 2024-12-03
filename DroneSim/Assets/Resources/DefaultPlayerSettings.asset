@@ -12,15 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78a355fb1381465409e81a2cd2880f0b, type: 3}
   m_Name: DefaultPlayerSettings
   m_EditorClassIdentifier: 
-  weight: 800
-  drag: 0.6
-  angularDrag: 15
-  maxMPS: 30.5
-  throttleModifier: 50
-  yawSpeedModifier: 0.8
-  pitchRollModifier: 0.5
-  cameraAngle: -25
-  cameraOffset: {x: 0, y: 0.01489, z: 0.1026}
+  cameraAngle: -20
   throttleCurve:
     serializedVersion: 2
     m_Curve:
@@ -34,10 +26,19 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.932447
+      value: 0.6211197
+      inSlope: 0.92088246
+      outSlope: 0.92088246
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -60,8 +61,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -84,8 +85,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -93,3 +94,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  masterVolume: 1
+  soundFxVolume: 1
+  eyeSize: {x: 0.35, y: 0.35, z: 0.35}
+  eyePosition: {x: -700, y: 0, z: 0}

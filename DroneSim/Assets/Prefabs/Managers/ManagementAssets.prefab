@@ -489,15 +489,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -4.38
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.36
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -15.92
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -527,6 +527,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8642075523396075560, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
+      propertyPath: levelRules
+      value: 
+      objectReference: {fileID: 11400000, guid: 262a8cb2a0a1e1e499b9d08afe567ecd, type: 2}
     - target: {fileID: 8642075523396075560, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: levelCamera
       value: 

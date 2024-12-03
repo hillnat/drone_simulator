@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-
+    public LevelRules levelRules;
     public Camera levelCamera;
     public PlayerController localPlayer;
 
@@ -34,8 +34,8 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        GameStats.spawn = transform.position;
-        localPlayer = PhotonNetwork.Instantiate("player", GameStats.spawn, GameStats.spawnRotation).GetComponent<PlayerController>();
+        levelRules.spawn = transform.position;
+        localPlayer = PhotonNetwork.Instantiate("player", levelRules.spawn, levelRules.spawnRotation).GetComponent<PlayerController>();
         SettingsManager.instance.SetDefaultValues();
     }
     #endregion

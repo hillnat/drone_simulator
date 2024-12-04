@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -68,6 +69,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public GameObject groundEffectParticles;
 	private float lastGroundEffectParticlesSpawnTime = 0f;
 	public bool groundEffect = false;
+	public List<AudioClip> impactAudioClips = new List<AudioClip>();
+	private AudioClip getImpactAudioClip => impactAudioClips[Random.Range(0, impactAudioClips.Count)];
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -256,7 +259,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (InputManager.instance.toggleSkycam) { SkyCamManager.instance.skyCam.enabled = !SkyCamManager.instance.skyCam.enabled; }
 		if (InputManager.instance.toggleTrail) { view.RPC("ToggleTrail", RpcTarget.AllBufferedViaServer, !trailRenderer.enabled); }
 		if (InputManager.instance.openMenu) { SettingsManager.instance.ToggleUI(); }
-		if (InputManager.instance.setSpawn && zeroDistance < GameManager.instance.levelRules.worldSize - 10 && transform.position.y >= 0) { GameManager.instance.levelRules.spawn = transform.position; GameManager.instance.levelRules.spawnRotation = transform.rotation; }
+		if (InputManager.instance.setSpawn && zeroDistance < GameManager.instance.levelRules.worldSize - 10 && transform.position.y >= 0) { GameManager.instance.SetSpawn(transform.position, transform.rotation); }
 		if (InputManager.instance.flip) { transform.rotation = Quaternion.identity; }
 		if (InputManager.instance.toggleChat) { ChatManager.instance.OpenChat(); }
 		if (InputManager.instance.color) {
@@ -381,4 +384,15 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		mainUICanvas.renderMode = RenderMode.ScreenSpaceOverlay;
     }
     #endregion
+
+    private void OnCollisionEnter(Collision collision)
+    {
+		Debug.Log($"rb vel mag {rb.velocity.magnitude}");
+		if (rb.velocity.magnitude > 5f)
+		{
+            Debug.Log($"thingy");
+
+            AudioManager.instance.PlaySound(getImpactAudioClip, transform.position);
+		}
+    }
 }

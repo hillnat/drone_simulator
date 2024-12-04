@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public LevelRules levelRules;
     public Camera levelCamera;
     public PlayerController localPlayer;
-
+    public GameObject spawnIndicator;
     #region Unity Callbacks
     private void Awake()
     {
@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        levelRules.spawn = transform.position;
+        SetSpawn(transform.position, transform.rotation);
         localPlayer = PhotonNetwork.Instantiate("player", levelRules.spawn, levelRules.spawnRotation).GetComponent<PlayerController>();
         SettingsManager.instance.SetDefaultValues();
     }
@@ -44,5 +44,11 @@ public class GameManager : MonoBehaviour
         time+= Time.deltaTime;
     }
     #endregion
-
+    public void SetSpawn(Vector3 position, Quaternion rotation)
+    {
+        levelRules.spawn = position;
+        levelRules.spawnRotation = rotation;
+        spawnIndicator.transform.position = position;
+        spawnIndicator.transform.rotation = rotation;
+    }
 }

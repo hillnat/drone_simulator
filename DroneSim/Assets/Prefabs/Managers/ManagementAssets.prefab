@@ -65,10 +65,6 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 1.93
       objectReference: {fileID: 0}
-    - target: {fileID: 76543793422218997, guid: aaf8c79cc0d236341a6468a92a063e87, type: 3}
-      propertyPath: m_Lightmapping
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4079719019068936609, guid: aaf8c79cc0d236341a6468a92a063e87, type: 3}
       propertyPath: m_Name
       value: Sun
@@ -215,24 +211,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7691537431144111176, guid: d1b63704996500a429981cd3979a022c, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1430727826743998768}
-    - target: {fileID: 7691537431144111176, guid: d1b63704996500a429981cd3979a022c, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1b63704996500a429981cd3979a022c, type: 3}
---- !u!1 &1430727826743998768 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1840104344567215122, guid: d1b63704996500a429981cd3979a022c, type: 3}
-  m_PrefabInstance: {fileID: 744125581687475490}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4235409935449864913 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3500590637502527475, guid: d1b63704996500a429981cd3979a022c, type: 3}
@@ -481,10 +464,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyCam
       objectReference: {fileID: 0}
-    - target: {fileID: 4247096221512616143, guid: 8c26d838b4198a8459fcf5412c289dfb, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -512,16 +491,8 @@ PrefabInstance:
       value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 75.707
-      objectReference: {fileID: 0}
-    - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 5.653
-      objectReference: {fileID: 0}
-    - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -56.026
       objectReference: {fileID: 0}
     - target: {fileID: 6390776979606712738, guid: caf089367930e7f4985cdf31708d2dc9, type: 3}
       propertyPath: m_LocalRotation.w

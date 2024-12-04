@@ -1039,6 +1039,10 @@ MonoBehaviour:
   VR_rightEye: {fileID: 6040207514359125234}
   groundEffectParticles: {fileID: 7909617880020028702, guid: 6443ff25a41760b4f83fb9829aebdf2a, type: 3}
   groundEffect: 0
+  impactAudioClips:
+  - {fileID: 8300000, guid: aed4233d6dafe2845bef2b9a5be11894, type: 3}
+  - {fileID: 8300000, guid: 4d8c5de539e843047a193c9055c5a34a, type: 3}
+  - {fileID: 8300000, guid: 06dddd02e92b2ac43a8f65f9ff3f29e1, type: 3}
 --- !u!108 &5146095766819906410
 Light:
   m_ObjectHideFlags: 0
@@ -1137,7 +1141,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: eea7e91568ba7fe4d808dc1b562ae4d6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 2.47
+  m_Pitch: 2.26
   Loop: 1
   Mute: 0
   Spatialize: 0

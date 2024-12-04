@@ -50,7 +50,6 @@ MonoBehaviour:
   chatCanvas: {fileID: 1137592518437930040}
   chatText: {fileID: 1412506377593649743}
   chatInput: {fileID: 3731738370846086360}
-  localPlayerID: 0
 --- !u!114 &7166769196896106717
 MonoBehaviour:
   m_ObjectHideFlags: 0

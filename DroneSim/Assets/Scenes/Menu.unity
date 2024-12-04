@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Factory
+  m_text: Villa
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fad6959440f58c2488d00f922cb1060e, type: 2}
   m_sharedMaterial: {fileID: -1333932572730029115, guid: fad6959440f58c2488d00f922cb1060e, type: 2}
@@ -812,7 +812,7 @@ GameObject:
   - component: {fileID: 975790012}
   - component: {fileID: 975790011}
   m_Layer: 5
-  m_Name: LevelFactory
+  m_Name: LevelVilla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ee05511c4e96b384faa5caf392548cae, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2e0dd27ad1bf20848b8fd99b5e613ce5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -914,7 +914,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1635852124}
         m_TargetAssemblyTypeName: CreateAndJoinRooms, Assembly-CSharp
-        m_MethodName: UICALLBACK_JoinLevelFactory
+        m_MethodName: UICALLBACK_JoinLevelVilla
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

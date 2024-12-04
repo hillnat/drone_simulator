@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 {
-    private string targetLevel = "LevelCity";
+    private string targetLevel = "LevelField";
     private void Start()
     {
         if (!PhotonNetwork.IsConnected)
@@ -18,9 +18,9 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         targetLevel = "LevelField";
         StartCoroutine(TryCreateJoin());
     }
-    public void UICALLBACK_JoinLevelFactory()
+    public void UICALLBACK_JoinLevelVilla()
     {
-        targetLevel = "LevelFactory";
+        targetLevel = "LevelVilla";
         StartCoroutine(TryCreateJoin());
     }
     public override void OnJoinedRoom()

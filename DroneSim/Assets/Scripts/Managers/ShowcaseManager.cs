@@ -3,7 +3,7 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class Showcase : MonoBehaviour
+public class ShowcaseManager : MonoBehaviour
 {
     private string[] dronePrefabNames = new string[3] { "Basic Drone", "Race Drone", "Tiny Whoop" };
 

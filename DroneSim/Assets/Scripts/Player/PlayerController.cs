@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private float zeroDistance = 0;
 	private Vector3 positionLastFrame = Vector3.zero;
 	public LayerMask groundEffectLayerMask;
+	private RenderTexture vrRendTexture;
+	public bool vrEnabled = false;
+    public bool vrEditMode = false;
     #region Post FX
     [HideInInspector] public PostProcessLayer postProcessLayer;
     [HideInInspector]public PostProcessVolume postProcessVolume;
@@ -36,6 +39,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private bool _angleIconsEnabled = true;
 	public RectTransform[] angleIcons = new RectTransform[5];
 	public Canvas mainUICanvas;
+	public Canvas vrCanvas;
     public TMP_Text nametag;
     public TMP_Text MAINUI_speedText;
 	public TMP_Text MAINUI_nameText;
@@ -61,7 +65,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
 	private int _curTrailColor = 0;
 	#endregion
-	public bool vrEditMode = false;
+	public GameObject groundEffectParticles;
+	private float lastGroundEffectParticlesSpawnTime = 0f;
+	public bool groundEffect = false;
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -98,7 +104,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		allUI.SetActive(false);
 		if (view.IsMine)
 		{
-			rb = transform.AddComponent<Rigidbody>();
+			vrRendTexture = (RenderTexture)Resources.Load("VR_RenderTexture");
+            rb = transform.AddComponent<Rigidbody>();
 			rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			Destroy(nametag.gameObject);
 			//view.RPC("SetDroneType", RpcTarget.AllBufferedViaServer, 0);
@@ -132,6 +139,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			angleIconsEnabled = true;
 			//Move to spawn
 			transform.position = GameManager.instance.levelRules.spawn;
+			//Setup VR
+			if (vrEnabled) { EnableVr(); }
+			else { DisableVr(); }
 		}
 		else
 		{
@@ -143,12 +153,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
 	private void FixedUpdate()
 	{
-		if (view.IsMine && drone!=null) {            
-			HandleHudUI();
+		if (view.IsMine && drone!=null) {
+			HandleGroundEffect();
+            HandleHudUI();
 			positionLastFrame = transform.position;
-			if (vrEditMode)
+			if (vrEnabled && vrEditMode)
 			{
-				HandleVR_EditMode();
+				HandleVrEditMode();
 			}
 			else
 			{
@@ -226,6 +237,14 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		trailRenderer.enabled = state;
 	}
 	#endregion
+	public void HandleGroundEffect()
+	{
+        groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.75f, groundEffectLayerMask);
+		if (groundEffect && GameManager.instance.time > lastGroundEffectParticlesSpawnTime + 0.5f) {
+			lastGroundEffectParticlesSpawnTime = GameManager.instance.time;
+            Instantiate(groundEffectParticles, transform.position, Quaternion.identity, null);
+		}
+    }
 	void HandleSounds() {
 		aS.pitch = 1.2f+(throttle/200);
 		aS.volume = SettingsManager.instance.playerSettings.masterVolume * SettingsManager.instance.playerSettings.soundFxVolume;
@@ -234,7 +253,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	{
 		zeroDistance = Mathf.Abs(Vector2.Distance(Vector2.zero, new Vector2(transform.position.x, transform.position.z)));
 		if (InputManager.instance.respawn || (zeroDistance > GameManager.instance.levelRules.worldSize || transform.position.y < -1)){ Respawn(); }//This also handles 0 distance respawn
-		if (InputManager.instance.toggleSkycam) { SkyCam.instance.skyCam.enabled = !SkyCam.instance.skyCam.enabled; }
+		if (InputManager.instance.toggleSkycam) { SkyCamManager.instance.skyCam.enabled = !SkyCamManager.instance.skyCam.enabled; }
 		if (InputManager.instance.toggleTrail) { view.RPC("ToggleTrail", RpcTarget.AllBufferedViaServer, !trailRenderer.enabled); }
 		if (InputManager.instance.openMenu) { SettingsManager.instance.ToggleUI(); }
 		if (InputManager.instance.setSpawn && zeroDistance < GameManager.instance.levelRules.worldSize - 10 && transform.position.y >= 0) { GameManager.instance.levelRules.spawn = transform.position; GameManager.instance.levelRules.spawnRotation = transform.rotation; }
@@ -265,12 +284,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	{
 		//Apply rotations
 		rb.AddTorque(transform.rotation * scaledInputs * Time.fixedDeltaTime);
-		//Check ground effect
-		bool groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.75f, groundEffectLayerMask);
+
 		//Apply throttle
-		Vector3 throttleVector = transform.up * throttle * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime;
-		rb.AddForce(throttleVector);
-		rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);//fake more gravity
+		rb.AddForce(transform.up * throttle * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
+        //fake more gravity
+        rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);
+
 	}
 	private void SpinPropellors()
 	{
@@ -278,9 +297,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			drone.propellors[i].transform.localEulerAngles = new Vector3(0, 0, drone.propellors[i].transform.localEulerAngles.z + 6000 * Time.deltaTime * (InputManager.instance.throttleInput + 3));
 		}
 	}
-	public void HandleVR_EditMode() {
-        if (InputManager.instance.directionalInputs.x != 0f || InputManager.instance.directionalInputs.z != 0) { ChangeEyePos(new Vector2(-InputManager.instance.directionalInputs.z, InputManager.instance.directionalInputs.x)); }
-        if (InputManager.instance.directionalInputs.y != 0f) { ChangeEyeSize(InputManager.instance.directionalInputs.y / 300f); }
+	public void HandleVrEditMode() {
+		if (!vrEditMode || !vrEnabled) { return; }
+        if (InputManager.instance.directionalInputs.x != 0f || InputManager.instance.directionalInputs.z != 0) { ChangeVrEyePos(new Vector2(-InputManager.instance.directionalInputs.z, InputManager.instance.directionalInputs.x)); }
+        if (InputManager.instance.directionalInputs.y != 0f) { ChangeVrEyeSize(InputManager.instance.directionalInputs.y / 300f); }
     }
 
 	public void Respawn()
@@ -304,7 +324,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			for (int i = 0; i < 5; i++)
 			{
 				if (i == 2) { continue; }//Skip middle bar, stays put. Although keep it in the array for other math
-				angleIcons[i].anchoredPosition = new Vector2(angleIcons[i].anchoredPosition.x, (angleIconRiseAmount * (i > 2 ? -1 : 1)) * Mathf.Abs(i - 2));
+				angleIcons[i].anchoredPosition = new Vector2(angleIcons[i].anchoredPosition.x, (angleIconRiseAmount * (i > 2 ? 1 : -1)) * Mathf.Abs(i - 2));
 			}
 		}
         //(amount * mod) : get initial height, with proper sign
@@ -314,7 +334,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
 	#endregion
 	#region VR
-	public void ChangeEyePos(Vector2 amount)
+	public void ChangeVrEyePos(Vector2 amount)
 	{
 		VR_rightEye.transform.Translate(VR_rightEye.transform.right * amount.x);
 		VR_rightEye.transform.Translate(VR_rightEye.transform.up * amount.y);
@@ -324,20 +344,41 @@ public class PlayerController : MonoBehaviour, IPunObservable
         SettingsManager.instance.playerSettings.eyePosition = VR_rightEye.transform.localPosition;
 
     }
-    public void ChangeEyeSize(float amount)
+    public void ChangeVrEyeSize(float amount)
     {
 		VR_rightEye.transform.localScale += Vector3.one * amount;
         VR_leftEye.transform.localScale += Vector3.one * amount;
 
 		SettingsManager.instance.playerSettings.eyeSize = VR_rightEye.transform.localScale;
     }
-	public void SetVRDefaults()
+	public void SetVrDefaults()
 	{
 		Vector3 pos = SettingsManager.instance.playerSettings.eyePosition;
         VR_rightEye.transform.localPosition = pos;
         VR_leftEye.transform.localPosition = new Vector3(-pos.x, pos.y, pos.z);//Flip offset for left side
         VR_rightEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
         VR_leftEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
+    }
+	public void EnableVr()
+	{
+		vrEnabled = true;
+        vrCanvas.gameObject.SetActive(true);
+        vrCanvas.enabled = true;
+		playerCamera.targetTexture = vrRendTexture;
+        mainUICanvas.renderMode = RenderMode.ScreenSpaceCamera;
+        mainUICanvas.worldCamera = playerCamera;
+        mainUICanvas.planeDistance = 0.5f;
+		SetVrDefaults();
+		vrEditMode = true;
+    }
+    public void DisableVr()
+    {
+        vrEnabled = false;
+		vrEditMode = false;
+        vrCanvas.gameObject.SetActive(false);
+		vrCanvas.enabled = false;
+        playerCamera.targetTexture = null;
+		mainUICanvas.renderMode = RenderMode.ScreenSpaceOverlay;
     }
     #endregion
 }

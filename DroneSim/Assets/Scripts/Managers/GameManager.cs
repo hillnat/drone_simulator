@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
+    public float time = 0f;
     public LevelRules levelRules;
     public Camera levelCamera;
     public PlayerController localPlayer;
@@ -38,6 +38,11 @@ public class GameManager : MonoBehaviour
         localPlayer = PhotonNetwork.Instantiate("player", levelRules.spawn, levelRules.spawnRotation).GetComponent<PlayerController>();
         SettingsManager.instance.SetDefaultValues();
     }
+
+    private void Update()
+    {
+        time+= Time.deltaTime;
+    }
     #endregion
-    
+
 }

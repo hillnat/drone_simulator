@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkyCam : MonoBehaviour
+public class SkyCamManager : MonoBehaviour
 {
-    public static SkyCam instance;
+    public static SkyCamManager instance;
     public Camera skyCam;
     private Vector2 fovLimits = new Vector2(1, 150);
 

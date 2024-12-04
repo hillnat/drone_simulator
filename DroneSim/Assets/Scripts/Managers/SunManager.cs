@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sun : MonoBehaviour
+public class SunManager : MonoBehaviour
 {
-    public static Sun instance;
+    public static SunManager instance;
     private int[] sunPositions = new int[10];
     private int curPosition = 0;
     private float timer=0;

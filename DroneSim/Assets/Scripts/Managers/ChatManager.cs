@@ -56,7 +56,7 @@ public class ChatManager : MonoBehaviour
         lastMessageTime = time;
     }
     [PunRPC]
-    public void AddChatMessage(string message)//must call as buffered via server
+    public void RPC_AddChatMessage(string message)//must call as buffered via server
     {
         chatList.Add($"{message}\n");
         RewriteGameChat();
@@ -68,7 +68,7 @@ public class ChatManager : MonoBehaviour
     public void UICALLBACK_AddChatMessage(string v)
     {
         if (v == "") { return; }
-        view.RPC("AddChatMessage", RpcTarget.All, $"{GameManager.instance.localPlayer.name} : {v}");
+        view.RPC("RPC_AddChatMessage", RpcTarget.All, $"{GameManager.instance.localPlayer.name} : {v}");
         chatInput.text = "";
         inputOpen = false;
     }

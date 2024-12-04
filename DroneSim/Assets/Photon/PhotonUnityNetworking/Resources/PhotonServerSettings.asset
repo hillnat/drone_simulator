@@ -42,6 +42,7 @@ MonoBehaviour:
   - ToggleTrail
   - SetName
   - SetColor
+  - RPC_AddChatMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

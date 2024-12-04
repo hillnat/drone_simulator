@@ -49,7 +49,7 @@ public class InputManager : MonoBehaviour
     }
     private void OnRespawn() { respawn = true; }
     private void OnToggleSkyCam() { toggleSkycam = true; }
-    private void OnSkipTime() { Sun.instance.SkipTime(); }
+    private void OnSkipTime() { SunManager.instance.SkipTime(); }
     private void OnToggleTrail() { toggleTrail = true; }
     private void OnColor() { color = true; }
     private void OnMousePosition(InputValue iv) { mousePosition = iv.Get<Vector2>(); }

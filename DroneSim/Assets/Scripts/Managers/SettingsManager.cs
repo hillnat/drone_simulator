@@ -22,8 +22,8 @@ public class SettingsManager : MonoBehaviour
     public Slider SETTINGSUI_qualitySlider;
     public Toggle SETTINGSUI_PostFXToggle;
     public Toggle SETTINGSUI_AngleIconsToggle;
+    public Toggle SETTINGSUI_PhoneVrModeToggle;
 
-	
     private void Awake()
     {
         if (instance == null)
@@ -46,7 +46,7 @@ public class SettingsManager : MonoBehaviour
     }
 	public void SetDefaultValues()
 	{
-		if (GameManager.instance.localPlayer.drone != null)
+		if (GameManager.instance.localPlayer != null && GameManager.instance.localPlayer.drone != null)
 		{
 			//Note setting input field value like this still invokes any callbacks on the input field
 			SETTINGSUI_camOffsetYInputField.text = $"{GameManager.instance.localPlayer.drone.droneStats.cameraOffset.y}";
@@ -58,6 +58,7 @@ public class SettingsManager : MonoBehaviour
 		SETTINGSUI_soundFXSlider.value = playerSettings.soundFxVolume;
 		SETTINGSUI_PostFXToggle.isOn = GameManager.instance.localPlayer.postProcessVolume.enabled;
 		SETTINGSUI_AngleIconsToggle.isOn = GameManager.instance.localPlayer.angleIconsEnabled;
+        SETTINGSUI_PhoneVrModeToggle.isOn = GameManager.instance.localPlayer.vrEnabled;
 		SETTINGSUI_qualitySlider.value = QualitySettings.GetQualityLevel();
 	}
 
@@ -109,6 +110,17 @@ public class SettingsManager : MonoBehaviour
     public void UICALLBACK_ChangeQuality(float v)
     {
         QualitySettings.SetQualityLevel(Mathf.Clamp((int)v, 0, 3), true);
+    }
+    public void UICALLBACK_ToggleVrMode(bool v)
+    {
+        if (v) { GameManager.instance.localPlayer.EnableVr(); }
+        else { GameManager.instance.localPlayer.DisableVr(); }
+    }
+    public void UICALLBACK_ReturnToMenu()
+    {
+        ChatManager.instance.view.RPC("RPC_AddChatMessage", RpcTarget.All, $"{GameManager.instance.localPlayer.name} is leaving");
+        PhotonNetwork.LeaveRoom();
+        SceneManager.LoadScene("Menu");
     }
     #endregion
 }

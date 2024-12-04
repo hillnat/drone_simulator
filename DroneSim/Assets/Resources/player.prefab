@@ -1017,6 +1017,8 @@ MonoBehaviour:
   groundEffectLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  vrEnabled: 0
+  vrEditMode: 0
   postProcessLayer: {fileID: 0}
   postProcessVolume: {fileID: 0}
   allUI: {fileID: 5563339904005246603}
@@ -1027,6 +1029,7 @@ MonoBehaviour:
   - {fileID: 84663081705325077}
   - {fileID: 7103342789510596}
   mainUICanvas: {fileID: 3334003889720427541}
+  vrCanvas: {fileID: 7335131320960273013}
   nametag: {fileID: 9067442068696133513}
   MAINUI_speedText: {fileID: 8321965133509559371}
   MAINUI_nameText: {fileID: 7452582871161245296}
@@ -1034,7 +1037,8 @@ MonoBehaviour:
   MAINUI_fpsText: {fileID: 5684098234224398783}
   VR_leftEye: {fileID: 1467035683873367585}
   VR_rightEye: {fileID: 6040207514359125234}
-  vrEditMode: 0
+  groundEffectParticles: {fileID: 7909617880020028702, guid: 6443ff25a41760b4f83fb9829aebdf2a, type: 3}
+  groundEffect: 0
 --- !u!108 &5146095766819906410
 Light:
   m_ObjectHideFlags: 0
@@ -1291,7 +1295,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 3033948072365140861}
-  m_PlaneDistance: 0.1
+  m_PlaneDistance: 0.001
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -2163,7 +2167,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5443491907855969405
 RectTransform:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b932b246fa47d24ca5e8378d715ad38, type: 3}
   m_Name: LevelFieldRules
   m_EditorClassIdentifier: 
-  additionalGravity: 1.5
+  additionalGravity: 3.2
   groundEffectMultiplier: 1.325
   worldSize: 300
   globalSpeedModifier: 1

@@ -45,7 +45,8 @@ public class InputManager : MonoBehaviour
     }
     private void OnThrottle(InputValue iv)
     {
-        throttleInput = iv.Get<float>();
+        float f = iv.Get<float>();
+        throttleInput = (f + 1f) / 2f;
     }
     private void OnRespawn() { respawn = true; }
     private void OnToggleSkyCam() { toggleSkycam = true; }

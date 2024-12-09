@@ -139,12 +139,21 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "25cd93f8-da1e-4989-a41e-e1ab9e3428c6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "3D Vector",
-                    "id": "4bcd2efd-c7d2-45a3-a53d-216419af51ee",
+                    "id": "61e01e12-6ce4-48e0-aac3-5476bdf55716",
                     "path": "3DVector",
                     "interactions": "",
                     "processors": "",
@@ -155,8 +164,8 @@
                 },
                 {
                     "name": "right",
-                    "id": "326c784e-024d-4922-8350-d37400f0edf2",
-                    "path": "<Gamepad>/rightStick/up",
+                    "id": "9a926fa1-192c-480c-b5ca-b6f3d104903d",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -166,10 +175,10 @@
                 },
                 {
                     "name": "left",
-                    "id": "583d263e-239a-4523-913e-02c28e2f81af",
-                    "path": "<Gamepad>/rightStick/down",
+                    "id": "a2f902d0-75b8-47bf-89a9-a5b27242eaf1",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/z",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Invert",
                     "groups": "",
                     "action": "XYZ",
                     "isComposite": false,
@@ -177,8 +186,8 @@
                 },
                 {
                     "name": "up",
-                    "id": "bd61a664-e694-4d55-a832-2056c28e010e",
-                    "path": "<Gamepad>/leftStick/right",
+                    "id": "418f152d-4f4b-4bb2-baa4-d4a8b9e525d4",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/rx",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -188,10 +197,10 @@
                 },
                 {
                     "name": "down",
-                    "id": "fe0c9564-561b-46e9-a370-2f129402716f",
-                    "path": "<Gamepad>/leftStick/left",
+                    "id": "c35963dc-f45b-47cf-a8a1-d6c0545093a6",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/rx",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Invert",
                     "groups": "",
                     "action": "XYZ",
                     "isComposite": false,
@@ -199,8 +208,8 @@
                 },
                 {
                     "name": "forward",
-                    "id": "f07a9964-c552-4b16-9c21-75b26455e30e",
-                    "path": "<Gamepad>/rightStick/left",
+                    "id": "dc4375dc-0b9c-47bc-ad53-f7d53add21d3",
+                    "path": "<Joystick>/stick/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -210,8 +219,8 @@
                 },
                 {
                     "name": "backward",
-                    "id": "88ed21ea-525a-44cf-9828-bf774ad79c1c",
-                    "path": "<Gamepad>/rightStick/right",
+                    "id": "c161eb64-395b-4648-a278-bdc700a08927",
+                    "path": "<Joystick>/stick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -331,6 +340,39 @@
                 },
                 {
                     "name": "1D Axis",
+                    "id": "29ff032e-5153-4940-b9b6-95810db8d1f3",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throttle",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "f5d8dc0c-9b0e-4f08-b3c8-f58744e82925",
+                    "path": "<Joystick>/stick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throttle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "09fabb0e-869d-4280-a06f-cb5f6d06197a",
+                    "path": "<Joystick>/stick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throttle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
                     "id": "63376b5b-fccd-4bb1-80b7-aa7d35753bca",
                     "path": "1DAxis",
                     "interactions": "",
@@ -375,6 +417,50 @@
                 },
                 {
                     "name": "",
+                    "id": "de1ec96b-207d-4b32-9861-ea19aee57834",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "d5b7badd-0a45-4cef-b185-9ce87166b8e1",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Modifier",
+                    "id": "d2fd438d-3ff9-492a-a21d-a42375c53b21",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/ry",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Binding",
+                    "id": "428dab21-2636-4a11-b525-bb4d877c16ad",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/ry",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
                     "id": "3d8114d7-7989-456a-a9f8-0a56b954c639",
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
@@ -405,6 +491,39 @@
                     "action": "ToggleTrail",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "f6cf9ce1-953d-4815-8b17-8bda43dc5d80",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleTrail",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "1145f8ee-05f9-46a5-bb35-3713fced1ce5",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/dial",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleTrail",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "e255354d-cf33-484a-884a-924b9534262e",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/dial",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleTrail",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
@@ -474,6 +593,17 @@
                 },
                 {
                     "name": "",
+                    "id": "d00f2ec5-fb0b-4825-a922-08cd2793cd60",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SetRespawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "17dabf6a-993b-4781-a3fa-f6b771d7c55b",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "Hold",
@@ -482,6 +612,39 @@
                     "action": "Flip",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "c9a48052-a797-4645-ae60-f7088c66c1f0",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Flip",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "dd3ad33d-e1b4-49cb-960b-29e5a2078ec4",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/dial",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Flip",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "30a1f34b-a82b-4c5d-9c06-5db674713a30",
+                    "path": "<HID::EdgeTX Radiomaster Pocket Joystick>/dial",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Flip",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
@@ -568,6 +731,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "VR_Edit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9605f662-b141-4e72-8671-21e0162b7a4d",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

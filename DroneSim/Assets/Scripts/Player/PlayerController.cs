@@ -280,14 +280,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (rawInputs.y != Mathf.Abs(rawInputs.y)) { scaledInputs.y *= -1; }
 		if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1; }
 		rawInputs.x *= -1;
-		//Throttle cant be negative, so clamp01
-		throttle = drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(Mathf.Clamp01(InputManager.instance.throttleInput));
+		
+		throttle = drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(InputManager.instance.throttleInput);
 	}
 	private void ApplyForces()
 	{
 		//Apply rotations
 		rb.AddTorque(transform.rotation * scaledInputs * Time.fixedDeltaTime);
-
 		//Apply throttle
 		rb.AddForce(transform.up * throttle * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
         //fake more gravity

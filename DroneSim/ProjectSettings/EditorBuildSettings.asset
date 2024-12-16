@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelVilla.unity
     guid: adae8de41c1eaf24598da8e6e317614f
+  - enabled: 1
+    path: Assets/Scenes/LevelConstruction.unity
+    guid: 6aa4b11e9badd0f49a7ea238a03c870b
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 60e93d99d6fdfc74992e6a1355c2e2e3, type: 2}

@@ -42,11 +42,14 @@ public class InputManager : MonoBehaviour
     private void OnXYZ(InputValue iv)
     {
         directionalInputs = iv.Get<Vector3>();
+        directionalInputs.x = Mathf.Clamp(directionalInputs.x, -1f, 1f);
+        directionalInputs.y = Mathf.Clamp(directionalInputs.y, -1f, 1f);
+        directionalInputs.z = Mathf.Clamp(directionalInputs.z, -1f, 1f);
     }
     private void OnThrottle(InputValue iv)
     {
         float f = iv.Get<float>();
-        throttleInput = (f + 1f) / 2f;
+        throttleInput = Mathf.Clamp01((f + 1f) / 2f);
     }
     private void OnRespawn() { respawn = true; }
     private void OnToggleSkyCam() { toggleSkycam = true; }

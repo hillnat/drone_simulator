@@ -92,3 +92,11 @@ The following packages were added:
   com.unity.modules.screencapture@1.0.0
   com.unity.modules.tilemap@1.0.0
   com.unity.modules.vehicles@1.0.0
+
+=== Tue Dec 10 23:02:34 2024
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.postprocessing from version 3.2.2 to 3.4.0

@@ -1043,6 +1043,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: aed4233d6dafe2845bef2b9a5be11894, type: 3}
   - {fileID: 8300000, guid: 4d8c5de539e843047a193c9055c5a34a, type: 3}
   - {fileID: 8300000, guid: 06dddd02e92b2ac43a8f65f9ff3f29e1, type: 3}
+  droneAudioPitchChangeSpeed: 15
+  droneAudioPitchThrottleMod: 1.5
+  baseDroneAudioPitch: 0.95
 --- !u!108 &5146095766819906410
 Light:
   m_ObjectHideFlags: 0

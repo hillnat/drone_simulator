@@ -16,9 +16,9 @@ MonoBehaviour:
   drag: 1
   angularDrag: 30
   throttleModifier: 3
-  yawSpeedModifier: 0.01
-  pitchRollModifier: 0.005
-  fieldOfView: 90
+  yawSpeedModifier: 0.05
+  pitchRollModifier: 0.03
+  fieldOfView: 110
   cameraOffset: {x: 0, y: 0.00758, z: 0.0058}
   droneModelPositionOffset: {x: 0, y: 0, z: 0}
   droneModelRotationOffset: {x: 270, y: 180, z: 0}

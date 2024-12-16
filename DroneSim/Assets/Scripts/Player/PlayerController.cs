@@ -27,8 +27,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector]public PostProcessVolume postProcessVolume;
 	#endregion
 	#region Inputs
-	private Vector3 scaledInputs =Vector3.zero;
-	private float throttle = 0;
+	private Vector4 scaledInputs =Vector4.zero;//w = throttle
     #endregion
     #region UI References
     public GameObject allUI;
@@ -65,13 +64,21 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		}
 	}
 	private int _curTrailColor = 0;
-	#endregion
-	public GameObject groundEffectParticles;
+    #endregion
+    #region Ground Effect
+    public GameObject groundEffectParticles;
 	private float lastGroundEffectParticlesSpawnTime = 0f;
 	public bool groundEffect = false;
-	public List<AudioClip> impactAudioClips = new List<AudioClip>();
+    #endregion
+    #region Impact Audio
+    public List<AudioClip> impactAudioClips = new List<AudioClip>();
 	private AudioClip getImpactAudioClip => impactAudioClips[Random.Range(0, impactAudioClips.Count)];
-	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	#endregion
+	private float droneAudioPitch = 1f;
+    [SerializeField]private float droneAudioPitchChangeSpeed = 15f;
+    [SerializeField] private float droneAudioPitchThrottleMod = 1.5f;
+    [SerializeField] private float baseDroneAudioPitch = 0.9f;
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
 		{
@@ -249,7 +256,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		}
     }
 	void HandleSounds() {
-		aS.pitch = 1.2f+(throttle/200);
+		float desiredPitch = baseDroneAudioPitch + (InputManager.instance.throttleInput * droneAudioPitchThrottleMod);
+
+        droneAudioPitch = Mathf.Lerp(droneAudioPitch, desiredPitch, Time.deltaTime * droneAudioPitchChangeSpeed);
+		aS.pitch = droneAudioPitch;
 		aS.volume = SettingsManager.instance.playerSettings.masterVolume * SettingsManager.instance.playerSettings.soundFxVolume;
 	}
 	void HandleOtherInputs()
@@ -272,23 +282,25 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		Vector3 rawInputs = InputManager.instance.directionalInputs;
 		
 		//Evaluate on curve
-		scaledInputs = new Vector3(playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.x)), playerSettings.yawCurve.Evaluate(Mathf.Abs(rawInputs.y)), playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.z)));
-		//add y rotation
-		scaledInputs = new Vector3(scaledInputs.x * drone.droneStats.pitchRollModifier, scaledInputs.y * drone.droneStats.yawSpeedModifier, scaledInputs.z * drone.droneStats.pitchRollModifier);
-		//Because we used abs prior we must regain signage. Ignore throttle because it must be positive
+		scaledInputs = new Vector4(
+			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.x)) * drone.droneStats.pitchRollModifier, 			
+			playerSettings.yawCurve.Evaluate(Mathf.Abs(rawInputs.y)) * drone.droneStats.yawSpeedModifier, 
+			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.z)) * drone.droneStats.pitchRollModifier,
+            playerSettings.throttleCurve.Evaluate(InputManager.instance.throttleInput) * drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier);
+		
+		//Because we used abs prior to evaluate on curve we must regain signage. Ignore throttle because it must be positive
 		if (rawInputs.x != Mathf.Abs(rawInputs.x)) { scaledInputs.x *= -1; }
 		if (rawInputs.y != Mathf.Abs(rawInputs.y)) { scaledInputs.y *= -1; }
 		if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1; }
+
 		rawInputs.x *= -1;
-		
-		throttle = drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier  * playerSettings.throttleCurve.Evaluate(InputManager.instance.throttleInput);
 	}
 	private void ApplyForces()
 	{
 		//Apply rotations
-		rb.AddTorque(transform.rotation * scaledInputs * Time.fixedDeltaTime);
+		rb.AddTorque(transform.rotation * (Vector3)scaledInputs * Time.fixedDeltaTime);
 		//Apply throttle
-		rb.AddForce(transform.up * throttle * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
+		rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
         //fake more gravity
         rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);
 

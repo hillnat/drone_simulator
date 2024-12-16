@@ -232,6 +232,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3569600722445477857, guid: 8feb8dcb5c0453a42a9b3f04b7a0d3c7, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4994939214186868467, guid: 8feb8dcb5c0453a42a9b3f04b7a0d3c7, type: 3}
       propertyPath: m_Name
       value: LevelVilla

@@ -23,6 +23,11 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         targetLevel = "LevelVilla";
         StartCoroutine(TryCreateJoin());
     }
+    public void UICALLBACK_JoinLevelConstruction()
+    {
+        targetLevel = "LevelConstruction";
+        StartCoroutine(TryCreateJoin());
+    }
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel(targetLevel);

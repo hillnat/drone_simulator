@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859d9b48496b90c4bb9ee6e66dc13b46, type: 3}
   m_Name: basicDrone
   m_EditorClassIdentifier: 
-  weight: 800
-  drag: 0.7
-  angularDrag: 10
-  throttleModifier: 47
-  yawSpeedModifier: 1.5
-  pitchRollModifier: 0.7
+  weight: 3500
+  drag: 0.3
+  angularDrag: 15
+  throttleModifier: 380
+  yawSpeedModifier: 1.4
+  pitchRollModifier: 1
   fieldOfView: 90
   cameraOffset: {x: 0, y: 0.02021, z: 0.1521}
   droneModelPositionOffset: {x: 0, y: 0, z: 0}

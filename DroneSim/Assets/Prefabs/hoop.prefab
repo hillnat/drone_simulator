@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a5263d2593d1b648916d13deb9d32c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitColor: {r: 0, g: 1, b: 0, a: 1}
-  hitClip: {fileID: 8300000, guid: c6c997cf9e81185459861bc956e1ab21, type: 3}
+  targetMaterial: {fileID: 0}
+  myHoopIndex: -1
 --- !u!65 &7226800089844738114
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -141,7 +141,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 830f16566ac9e924ea1d51d601e31747, type: 2}
+  - {fileID: 2100000, guid: 46603d08d1a3e3842ae4fe4be3f4bf02, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -21,4 +21,4 @@ EditorBuildSettings:
     path: Assets/Scenes/LevelConstruction.unity
     guid: 6aa4b11e9badd0f49a7ea238a03c870b
   m_configObjects:
-    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 60e93d99d6fdfc74992e6a1355c2e2e3, type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: e426eb36411168743a5f0eecfc87ba95, type: 2}

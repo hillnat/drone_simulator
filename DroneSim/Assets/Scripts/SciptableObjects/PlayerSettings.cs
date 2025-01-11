@@ -9,6 +9,7 @@ public class PlayerSettings : ScriptableObject
     public AnimationCurve throttleCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
     public AnimationCurve pitchRollCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
     public AnimationCurve yawCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
+    public float angleModeMaxAngle = 75f;
     public float masterVolume = 1f;
     public float soundFxVolume = 1f;
     public Vector3 eyeSize = Vector3.one;

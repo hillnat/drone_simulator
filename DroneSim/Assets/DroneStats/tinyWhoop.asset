@@ -12,15 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859d9b48496b90c4bb9ee6e66dc13b46, type: 3}
   m_Name: tinyWhoop
   m_EditorClassIdentifier: 
-  weight: 45
-  drag: 1
-  angularDrag: 30
-  throttleModifier: 3
-  yawSpeedModifier: 0.05
-  pitchRollModifier: 0.03
-  fieldOfView: 110
-  cameraOffset: {x: 0, y: 0.00758, z: 0.0058}
-  droneModelPositionOffset: {x: 0, y: 0, z: 0}
-  droneModelRotationOffset: {x: 270, y: 180, z: 0}
-  colliderCenter: {x: 0, y: -0.00006484985, z: -0.0002309084}
-  colliderSize: {x: 0.055, y: 0.013433456, z: 0.055927515}
+  weight: 18
+  drag: 0.5
+  angularDrag: 15
+  throttleModifier: 1.65
+  yawSpeedModifier: 3
+  pitchRollModifier: 3
+  fieldOfView: 105

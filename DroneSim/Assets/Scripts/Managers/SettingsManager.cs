@@ -14,8 +14,6 @@ public class SettingsManager : MonoBehaviour
 	public PlayerSettings playerSettings;
 
     public Canvas settingsCanvas;    //Store all settings fields for settings default values
-    public TMP_InputField SETTINGSUI_camOffsetYInputField;
-    public TMP_InputField SETTINGSUI_camOffsetZInputField;
     public TMP_InputField SETTINGSUI_camAngleInputField;
     public TMP_InputField SETTINGSUI_nameInputField;
     public Slider SETTINGSUI_soundFXSlider;
@@ -46,18 +44,11 @@ public class SettingsManager : MonoBehaviour
     }
 	public void SetDefaultValues()
 	{
-		if (GameManager.instance.localPlayer != null && GameManager.instance.localPlayer.drone != null)
-		{
-			//Note setting input field value like this still invokes any callbacks on the input field
-			SETTINGSUI_camOffsetYInputField.text = $"{GameManager.instance.localPlayer.drone.droneStats.cameraOffset.y}";
-			SETTINGSUI_camOffsetZInputField.text = $"{GameManager.instance.localPlayer.drone.droneStats.cameraOffset.z}";
-		}
-
 		SETTINGSUI_camAngleInputField.text = $"{playerSettings.cameraAngle}";
 		SETTINGSUI_nameInputField.text = $"{GameManager.instance.localPlayer.name}";
 		SETTINGSUI_soundFXSlider.value = playerSettings.soundFxVolume;
 		SETTINGSUI_PostFXToggle.isOn = GameManager.instance.localPlayer.postProcessVolume.enabled;
-		SETTINGSUI_AngleIconsToggle.isOn = GameManager.instance.localPlayer.angleIconsEnabled;
+		//SETTINGSUI_AngleIconsToggle.isOn = GameManager.instance.localPlayer.horizonLinesEnabled;
         SETTINGSUI_PhoneVrModeToggle.isOn = GameManager.instance.localPlayer.vrEnabled;
 		SETTINGSUI_qualitySlider.value = QualitySettings.GetQualityLevel();
 	}
@@ -74,7 +65,7 @@ public class SettingsManager : MonoBehaviour
     }
     public void UICALLBACK_ToggleAngleIcons()
     {
-        GameManager.instance.localPlayer.angleIconsEnabled = !GameManager.instance.localPlayer.angleIconsEnabled;
+        //GameManager.instance.localPlayer.horizonLinesEnabled = !GameManager.instance.localPlayer.horizonLinesEnabled;
     }
     public void UICALLBACK_ChangeCamAngle(string c)
     {
@@ -83,24 +74,6 @@ public class SettingsManager : MonoBehaviour
         {
             playerSettings.cameraAngle = v;
             GameManager.instance.localPlayer.playerCamera.transform.localEulerAngles = new Vector3(playerSettings.cameraAngle, 0, 0);
-        }
-    }
-    public void UICALLBACK_ChangeCamOffsetY(string c)
-    {
-        float v;
-        if (float.TryParse(c, out v))
-        {
-            GameManager.instance.localPlayer.drone.droneStats.cameraOffset.y = v;
-            GameManager.instance.localPlayer.playerCamera.transform.localPosition = GameManager.instance.localPlayer.drone.droneStats.cameraOffset;
-        }
-    }
-    public void UICALLBACK_ChangeCamOffsetZ(string c)
-    {
-        float v;
-        if (float.TryParse(c, out v))
-        {
-            GameManager.instance.localPlayer.drone.droneStats.cameraOffset.z = v;
-            GameManager.instance.localPlayer.playerCamera.transform.localPosition = GameManager.instance.localPlayer.drone.droneStats.cameraOffset;
         }
     }
     public void UICALLBACK_ChangeName(string v)

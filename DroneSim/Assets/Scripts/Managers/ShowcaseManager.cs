@@ -5,7 +5,7 @@ using TMPro;
 
 public class ShowcaseManager : MonoBehaviour
 {
-    private string[] dronePrefabNames = new string[3] { "Basic Drone", "Race Drone", "Tiny Whoop" };
+    private string[] dronePrefabNames = new string[1] { "65mm Tiny Whoop" };
 
     private int selectedDroneType//index of which drone to spawn
     {
@@ -16,6 +16,10 @@ public class ShowcaseManager : MonoBehaviour
 
     [SerializeField] private Animator SHOWCASE_cameraAnimator;
     [SerializeField] private TMP_Text SHOWCASE_selectedDroneNameText;
+    private void Start()
+    {
+        UpdateShowcase();
+    }
     public void UICALLBACK_SpawnDrone()
     {
         GameManager.instance.localPlayer.view.RPC("SetDroneType", RpcTarget.AllBufferedViaServer, selectedDroneType);

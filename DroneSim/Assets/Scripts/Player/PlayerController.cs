@@ -7,15 +7,17 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour, IPunObservable
 {
+	public enum FlightModes {Acro, Angle }
+	public float angleModeRate = 5f;
+	public FlightModes flightModes = FlightModes.Acro;
     private int droneType=-1; //gets set by spawner, so we know which model to create
-	private string[] dronePrefabNames = new string[3] { "basicDrone", "raceDrone", "tinyWhoop" };
+	private string[] dronePrefabNames = new string[1] { "tinywhoop65mm" };
 	public Drone drone;
 	public PlayerSettings playerSettings;
 	public PhotonView view;
     [HideInInspector] public Camera playerCamera;
 	private Rigidbody rb;
 	private AudioSource aS;
-	private BoxCollider mainCollider;
 	private float zeroDistance = 0;
 	private Vector3 positionLastFrame = Vector3.zero;
 	public LayerMask groundEffectLayerMask;
@@ -28,16 +30,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	#endregion
 	#region Inputs
 	private Vector4 scaledInputs =Vector4.zero;//w = throttle
+	[SerializeField]private Vector3 idealAngle = Vector3.zero;
     #endregion
     #region UI References
     public GameObject allUI;
-	public bool angleIconsEnabled
-	{
-		get { return _angleIconsEnabled; }
-		set { _angleIconsEnabled = value; for (int i = 0; i < angleIcons.Length; i++) { angleIcons[i].gameObject.SetActive(_angleIconsEnabled); } }
-	}
-	private bool _angleIconsEnabled = true;
-	public RectTransform[] angleIcons = new RectTransform[5];
+	public RectTransform horizonLinesParent;
 	public Canvas mainUICanvas;
 	public Canvas vrCanvas;
     public TMP_Text nametag;
@@ -45,6 +42,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public TMP_Text MAINUI_nameText;
 	public TMP_Text MAINUI_altitudeText;
 	public TMP_Text MAINUI_fpsText;
+	public TMP_Text MAINUI_timerText;
 	public RawImage VR_leftEye;
 	public RawImage VR_rightEye;
 	#endregion 
@@ -78,6 +76,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [SerializeField]private float droneAudioPitchChangeSpeed = 15f;
     [SerializeField] private float droneAudioPitchThrottleMod = 1.5f;
     [SerializeField] private float baseDroneAudioPitch = 0.9f;
+	public float timer = 0f;
+	public bool timerActive = false;
+	public List<float> timerLaps = new List<float>();
+	private string timerLapsText="";
+	public Hoop lastHoopHit;
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -106,9 +110,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		postProcessVolume=GetComponentInChildren<PostProcessVolume>();
 		postProcessLayer= GetComponentInChildren<PostProcessLayer>();
 		playerCamera = GetComponentInChildren<Camera>();
-		mainCollider=GetComponent<BoxCollider>();
-		mainCollider.size = Vector3.zero;
-		mainCollider.center = Vector3.zero;
 		trailRenderer.enabled = true;
 		playerCamera.enabled = false;
 		allUI.SetActive(false);
@@ -122,7 +123,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		}
 		else
 		{
-			Destroy(mainCollider);
 			Destroy(postProcessVolume);
 			Destroy(postProcessLayer);
 			Destroy(playerCamera.gameObject);
@@ -146,7 +146,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			trailRenderer.endColor = colors[curColor];
 			//Set UI stuff
 			view.RPC("SetName", RpcTarget.AllBufferedViaServer, "Player" + $"{view.ViewID}");
-			angleIconsEnabled = true;
 			//Move to spawn
 			transform.position = GameManager.instance.levelRules.spawn;
 			//Setup VR
@@ -158,7 +157,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			Destroy(mainUICanvas.gameObject);
 			Destroy(GetComponentInChildren<Camera>().gameObject);
 			Destroy(rb);
-			Destroy(mainCollider);
 		}
 	}
 	private void FixedUpdate()
@@ -180,11 +178,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private void Update()
 	{
 		if (view.IsMine && drone != null) {
-			CalculateInputs();
+            CalculateInputs();
 			SpinPropellors();
 			HandleSounds();
 			HandleOtherInputs();
 			MAINUI_fpsText.text = $"{(int)(1f / Time.deltaTime)} FPS";
+			if (timerActive) { timer += Time.deltaTime; }
 		}
 	}
 	#endregion
@@ -201,8 +200,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         drone = Instantiate((GameObject)Resources.Load($"Drones/{dronePrefabNames[droneType]}"), Vector3.zero, Quaternion.identity).GetComponent<Drone>();
         //Set positions
         drone.gameObject.transform.parent = transform;
-        drone.gameObject.transform.localPosition = drone.droneStats.droneModelPositionOffset;
-        drone.gameObject.transform.localEulerAngles = drone.droneStats.droneModelRotationOffset;
+		drone.gameObject.transform.localPosition = Vector3.zero;
+		drone.gameObject.transform.localEulerAngles = Vector3.zero;
         //Setup physics values can camera position if owner
         if (view.IsMine)
         {
@@ -211,10 +210,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
             rb.drag = drone.droneStats.drag;
             rb.angularDrag = drone.droneStats.angularDrag;
             rb.useGravity = true;
-            playerCamera.transform.localPosition = drone.droneStats.cameraOffset;
+            playerCamera.transform.position = drone.cameraMount.position;
             playerCamera.fieldOfView = drone.droneStats.fieldOfView;
-            mainCollider.size = drone.droneStats.colliderSize;
-            mainCollider.center = drone.droneStats.colliderCenter;
 			aS.Play();
 			allUI.SetActive(true);
 			SettingsManager.instance.SetDefaultValues();
@@ -255,6 +252,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
             Instantiate(groundEffectParticles, transform.position, Quaternion.identity, null);
 		}
     }
+	Vector3 GetHorizonPoint()
+	{
+		Vector3 v= transform.forward * 999999f;
+		return new Vector3(v.x,0,v.z);
+	}
 	void HandleSounds() {
 		float desiredPitch = baseDroneAudioPitch + (InputManager.instance.throttleInput * droneAudioPitchThrottleMod);
 
@@ -279,36 +281,60 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private void CalculateInputs()
 	{
 		//Get rotational inputs
-		Vector3 rawInputs = InputManager.instance.directionalInputs;
-		
-		//Evaluate on curve
-		scaledInputs = new Vector4(
+		Vector4 rawInputs = new Vector4(InputManager.instance.directionalInputs.x, InputManager.instance.directionalInputs.y, InputManager.instance.directionalInputs.z, InputManager.instance.throttleInput);
+
+        //Evaluate on curve
+        scaledInputs = new Vector4(
 			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.x)) * drone.droneStats.pitchRollModifier, 			
 			playerSettings.yawCurve.Evaluate(Mathf.Abs(rawInputs.y)) * drone.droneStats.yawSpeedModifier, 
 			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.z)) * drone.droneStats.pitchRollModifier,
-            playerSettings.throttleCurve.Evaluate(InputManager.instance.throttleInput) * drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier);
-		
-		//Because we used abs prior to evaluate on curve we must regain signage. Ignore throttle because it must be positive
-		if (rawInputs.x != Mathf.Abs(rawInputs.x)) { scaledInputs.x *= -1; }
-		if (rawInputs.y != Mathf.Abs(rawInputs.y)) { scaledInputs.y *= -1; }
-		if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1; }
+            playerSettings.throttleCurve.Evaluate(rawInputs.w) * drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier);
 
-		rawInputs.x *= -1;
+
+        idealAngle = new Vector3(
+			Mathf.Lerp(0f, playerSettings.angleModeMaxAngle, scaledInputs.x), 
+			0f, 
+			Mathf.Lerp(0f, playerSettings.angleModeMaxAngle, scaledInputs.z));//Calculate before regaining singage for lerp calls
+
+        //Because we used abs prior to evaluate on curve we must regain signage. Ignore throttle because it must be positive
+        if (rawInputs.x != Mathf.Abs(rawInputs.x)) { scaledInputs.x *= -1f; idealAngle.x *= -1f; }
+		if (rawInputs.y != Mathf.Abs(rawInputs.y)) { scaledInputs.y *= -1f; idealAngle.y *= -1f; }
+        if (rawInputs.z != Mathf.Abs(rawInputs.z)) { scaledInputs.z *= -1f; idealAngle.z *= -1f; }
+
+		//Debug.Log($"RAW : X {rawInputs.x:F2}, Y {rawInputs.y:F2}, Z {rawInputs.z:F2}, T {rawInputs.w:F2}\nSCALED : X {scaledInputs.x:F2}, Y {scaledInputs.y:F2}, Z {scaledInputs.z:F2}, T {scaledInputs.w:F2}");
 	}
 	private void ApplyForces()
 	{
 		//Apply rotations
-		rb.AddTorque(transform.rotation * (Vector3)scaledInputs * Time.fixedDeltaTime);
-		//Apply throttle
-		rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
+		switch (flightModes)
+		{
+			case FlightModes.Acro:
+                transform.Rotate((Vector3)scaledInputs * Time.fixedDeltaTime * 300f);
+				break;
+			case FlightModes.Angle:
+				transform.Rotate(Vector3.up * scaledInputs.y * Time.fixedDeltaTime * 300f);//Apply yaw normally
+
+				transform.rotation = Quaternion.Euler(new Vector3(
+                    Mathf.LerpAngle(transform.eulerAngles.x, idealAngle.x, Time.fixedDeltaTime * angleModeRate),
+                    transform.eulerAngles.y,
+                    Mathf.LerpAngle(transform.eulerAngles.z, idealAngle.z, Time.fixedDeltaTime * angleModeRate)));
+                break;
+			default:
+				break;
+		}
+        //Apply throttle
+        rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
         //fake more gravity
-        rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/800) * Time.fixedDeltaTime);
+        rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/550f) * Time.fixedDeltaTime);
 
 	}
 	private void SpinPropellors()
 	{
 		for (int i = 0; i < drone.propellors.Length; i++) {
-			drone.propellors[i].transform.localEulerAngles = new Vector3(0, 0, drone.propellors[i].transform.localEulerAngles.z + 6000 * Time.deltaTime * (InputManager.instance.throttleInput + 3));
+			bool even = i%2 == 0;//Flip every other prop
+			float amount = 6000 * Time.deltaTime * (InputManager.instance.throttleInput + 3) * (even?1f:-1f);
+
+            drone.propellors[i].transform.localEulerAngles = drone.propellors[i].transform.localEulerAngles+drone.propAxis*amount;
 		}
 	}
 	public void HandleVrEditMode() {
@@ -323,27 +349,38 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		rb.angularVelocity = Vector3.zero;
 		transform.position = GameManager.instance.levelRules.spawn;
 		transform.rotation = GameManager.instance.levelRules.spawnRotation;
+		trailRenderer.Clear();
+		SetTimer(false);
 	}
+    #region Race Timer
+    public void SetTimer(bool timerOn)
+	{
+		bool prior = timerActive;
+		timerActive=timerOn;
+		if (prior && timerActive || prior && !timerActive) { timerLaps.Add(timer);timer = 0; UpdateTimerLapsText(); }//If turned on while already on, count that as a lap complete,, or the end gate
+		else if (!prior && timerActive) { timer = 0f; timerLaps.Clear(); UpdateTimerLapsText(); }//Starting for the first time
+    }
+	private void UpdateTimerLapsText()
+	{
+		timerLapsText = "";
+		for (int i = timerLaps.Count-1; i >= 0; i--)
+		{
+			timerLapsText += $"l{i+1} {timerLaps[i]:F3}\n";
+		}
+	}
+	public void SetLastHitHoop(Hoop hoop)
+	{
+		lastHoopHit = hoop;
+	}
+    #endregion
     #region UI
     void HandleHudUI()
     {
         MAINUI_speedText.text = $"m/s {((transform.position - positionLastFrame).magnitude / Time.fixedDeltaTime):F1}";
         MAINUI_altitudeText.text = $"alt {transform.position.y:F1}m";
-		//Set the position of the UI angle icon bars
-		if (angleIconsEnabled)
-		{
-            float angleIconRiseAmount = transform.rotation.eulerAngles.z;
-			if (angleIconRiseAmount > 180) { angleIconRiseAmount -= 360; }//Account for flipping
-			angleIconRiseAmount /= 2;
-			for (int i = 0; i < 5; i++)
-			{
-				if (i == 2) { continue; }//Skip middle bar, stays put. Although keep it in the array for other math
-				angleIcons[i].anchoredPosition = new Vector2(angleIcons[i].anchoredPosition.x, (angleIconRiseAmount * (i > 2 ? 1 : -1)) * Mathf.Abs(i - 2));
-			}
-		}
-        //(amount * mod) : get initial height, with proper sign
-        //* Mathf.Abs(i-2) : multiply by i's distance from the middle point of the array. ie becasue out of 0-4, 2 is the center number, 0 and 4 would output a multiplier of 2, and 1 and 3 output a multiplier of 1
-        //(i>2?-1:1) flip if over halfway through iterations
+        MAINUI_timerText.text = $"t {timer:F3}\n"+timerLapsText;
+        horizonLinesParent.position = playerCamera.WorldToScreenPoint(GetHorizonPoint());
+        horizonLinesParent.position = new Vector3(horizonLinesParent.position.x, horizonLinesParent.position.y, 0f);
     }
 
 	#endregion

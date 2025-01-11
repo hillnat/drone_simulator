@@ -9,9 +9,4 @@ public class DroneStats : ScriptableObject
     public float yawSpeedModifier = 0.8f;
     public float pitchRollModifier = 0.5f;
     public float fieldOfView = 130;
-    public Vector3 cameraOffset = new Vector3(0, 0.01489f, 0.1026f);
-    public Vector3 droneModelPositionOffset = Vector3.zero;
-    public Vector3 droneModelRotationOffset = Vector3.zero;
-    public Vector3 colliderCenter = Vector3.zero;
-    public Vector3 colliderSize = Vector3.zero;
 }

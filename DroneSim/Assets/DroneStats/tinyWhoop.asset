@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859d9b48496b90c4bb9ee6e66dc13b46, type: 3}
   m_Name: tinyWhoop
   m_EditorClassIdentifier: 
-  weight: 18
-  drag: 0.5
+  weight: 12
+  drag: 1.1
   angularDrag: 15
-  throttleModifier: 1.65
-  yawSpeedModifier: 3
-  pitchRollModifier: 3
-  fieldOfView: 105
+  throttleModifier: 0.8
+  yawSpeedModifier: 2.4
+  pitchRollModifier: 2.7
+  fieldOfView: 100

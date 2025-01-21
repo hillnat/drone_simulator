@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public TMP_Text MAINUI_altitudeText;
 	public TMP_Text MAINUI_fpsText;
 	public TMP_Text MAINUI_timerText;
+	public Image MAINUI_cameraNoise;
 	public RawImage VR_leftEye;
 	public RawImage VR_rightEye;
 	#endregion 
@@ -381,6 +382,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
         MAINUI_timerText.text = $"t {timer:F3}\n"+timerLapsText;
         horizonLinesParent.position = playerCamera.WorldToScreenPoint(GetHorizonPoint());
         horizonLinesParent.position = new Vector3(horizonLinesParent.position.x, horizonLinesParent.position.y, 0f);
+		MAINUI_cameraNoise.transform.position -= new Vector3(0, Time.fixedDeltaTime * Random.Range(-25f,25f), 0);
+		if (MAINUI_cameraNoise.transform.position.y < -500f) { MAINUI_cameraNoise.transform.position += new Vector3(0, 900f, 0); }
+		if (MAINUI_cameraNoise.transform.position.y > 500f) { MAINUI_cameraNoise.transform.position -= new Vector3(0, 900f, 0); }
     }
 
 	#endregion

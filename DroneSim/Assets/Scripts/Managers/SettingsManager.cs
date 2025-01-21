@@ -67,6 +67,18 @@ public class SettingsManager : MonoBehaviour
     {
         //GameManager.instance.localPlayer.horizonLinesEnabled = !GameManager.instance.localPlayer.horizonLinesEnabled;
     }
+    public void UICALLBACK_ToggleCrosshair()
+    {
+        //GameManager.instance.localPlayer.horizonLinesEnabled = !GameManager.instance.localPlayer.horizonLinesEnabled;
+    }
+    public void UICALLBACK_ToggleAltitude()
+    {
+        //GameManager.instance.localPlayer.horizonLinesEnabled = !GameManager.instance.localPlayer.horizonLinesEnabled;
+    }
+    public void UICALLBACK_ToggleSpeed()
+    {
+        //GameManager.instance.localPlayer.horizonLinesEnabled = !GameManager.instance.localPlayer.horizonLinesEnabled;
+    }
     public void UICALLBACK_ChangeCamAngle(string c)
     {
         float v;

@@ -52,7 +52,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 402953570358315009}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -843,6 +843,81 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   priority: 0
+--- !u!1 &2594912618650801509
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3001917933146606324}
+  - component: {fileID: 2413651442751589701}
+  - component: {fileID: 1635947406518777591}
+  m_Layer: 5
+  m_Name: noise
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3001917933146606324
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2594912618650801509}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 451213663686799694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1922, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2413651442751589701
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2594912618650801509}
+  m_CullTransparentMesh: 1
+--- !u!114 &1635947406518777591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2594912618650801509}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.078431375}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 528e888a57f9125418db23e4f733f4a7, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2799807215041097078
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,7 +970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angleModeRate: 5
-  flightModes: 1
+  flightModes: 0
   drone: {fileID: 0}
   playerSettings: {fileID: 11400000, guid: aaa5fad8ebc99964284f66c45040e3f8, type: 2}
   view: {fileID: 6406253602984221751}
@@ -918,6 +993,7 @@ MonoBehaviour:
   MAINUI_altitudeText: {fileID: 3019083918710330546}
   MAINUI_fpsText: {fileID: 5684098234224398783}
   MAINUI_timerText: {fileID: 986902954669718371}
+  MAINUI_cameraNoise: {fileID: 1635947406518777591}
   VR_leftEye: {fileID: 1467035683873367585}
   VR_rightEye: {fileID: 6040207514359125234}
   groundEffectParticles: {fileID: 7909617880020028702, guid: 6443ff25a41760b4f83fb9829aebdf2a, type: 3}
@@ -1151,6 +1227,7 @@ RectTransform:
   - {fileID: 6883602339337160558}
   - {fileID: 2054066617231574730}
   - {fileID: 4330019265607376154}
+  - {fileID: 3001917933146606324}
   m_Father: {fileID: 8044003082114792342}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1470,8 +1547,8 @@ RectTransform:
   m_GameObject: {fileID: 6921624329066908188}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.3, z: 0.3}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.45, y: 0.225, z: 0.225}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 451213663686799694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 [CreateAssetMenu(fileName = "PlayerSettings", menuName = "Create PlayerSettings", order = 1)]
@@ -18,17 +19,29 @@ public class PlayerSettings : ScriptableObject
     public float soundFxVolume = 1f;
     public Vector3 eyeSize = Vector3.one;
     public Vector3 eyePosition = Vector3.zero;
-    
-    public OSD_Element OSD_speed = new OSD_Element {};
-    public OSD_Element OSD_altitude = new OSD_Element {};
-    public OSD_Element OSD_horizonLine = new OSD_Element {};
-    public OSD_Element OSD_Crosshair = new OSD_Element {};
-   
+
+    [DoNotSerialize]
+    public OsdElementData[] allOsdElemDatas = new OsdElementData[7]{ 
+        new OsdElementData("speed", true, new Vector2(500f, -400f), new Vector2(1f, 1f)),
+        new OsdElementData("altitude", true, new Vector2(500f, -430f), new Vector2(1f, 1f)),
+        new OsdElementData("horizonLine", false, new Vector2(0, 0), new Vector2(1f, 1f)),
+        new OsdElementData("crosshair", true, new Vector2(0, 0), new Vector2(1f, 1f)),
+        new OsdElementData("timer", true, new Vector2(-400, 0), new Vector2(1f, 1f)),
+        new OsdElementData("name", true, new Vector2(0, -500), new Vector2(1f, 1f)),
+        new OsdElementData("fps", true, new Vector2(1000, 900), new Vector2(1f, 1f))
+    };
 }
-[Serializable]
-public struct OSD_Element
+public struct OsdElementData
 {
-    public GameObject uiElement;
+    public string elementName;
+    public bool elementEnabled;
     public Vector2 position;
     public Vector2 scale;
+    public OsdElementData(string name, bool enabled, Vector2 position, Vector2 scale)
+    {
+        this.elementName = name;
+        this.elementEnabled = enabled;
+        this.position = position;
+        this.scale = scale;
+    }
 }

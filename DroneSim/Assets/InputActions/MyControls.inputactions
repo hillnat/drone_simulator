@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Mouse1",
+                    "type": "Button",
+                    "id": "d34a19ac-3dea-4f0a-8f41-f5e657cfee15",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SetRespawn",
                     "type": "Button",
                     "id": "8d09fd1e-12de-4812-ac92-4d647ee3985d",
@@ -136,15 +145,6 @@
                     "type": "PassThrough",
                     "id": "54af2bc2-f238-41d6-bd85-c03749f8a297",
                     "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "New action",
-                    "type": "Button",
-                    "id": "25cd93f8-da1e-4989-a41e-e1ab9e3428c6",
-                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -617,7 +617,7 @@
                     "name": "One Modifier",
                     "id": "c9a48052-a797-4645-ae60-f7088c66c1f0",
                     "path": "OneModifier",
-                    "interactions": "",
+                    "interactions": "Hold",
                     "processors": "",
                     "groups": "",
                     "action": "Flip",
@@ -736,12 +736,12 @@
                 },
                 {
                     "name": "",
-                    "id": "9605f662-b141-4e72-8671-21e0162b7a4d",
-                    "path": "",
+                    "id": "5e636daa-095c-40ca-8887-79cca8fbcbb9",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Mouse1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

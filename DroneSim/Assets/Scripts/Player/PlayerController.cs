@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     private int droneType=-1; //gets set by spawner, so we know which model to create
 	private string[] dronePrefabNames = new string[1] { "tinywhoop65mm" };
 	public Drone drone;
-	public PlayerSettings playerSettings;
+	private PlayerSettings playerSettings;
 	public PhotonView view;
     [HideInInspector] public Camera playerCamera;
 	private Rigidbody rb;
@@ -21,9 +21,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	private float zeroDistance = 0;
 	private Vector3 positionLastFrame = Vector3.zero;
 	public LayerMask groundEffectLayerMask;
-	private RenderTexture vrRendTexture;
-	public bool vrEnabled = false;
-    public bool vrEditMode = false;
     #region Post FX
     [HideInInspector] public PostProcessLayer postProcessLayer;
     [HideInInspector]public PostProcessVolume postProcessVolume;
@@ -35,8 +32,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     #region UI References
     public GameObject allUI;
 	public RectTransform horizonLinesParent;
-	public Canvas mainUICanvas;
-	public Canvas vrCanvas;
+	public RectTransform osdParent;
     public TMP_Text nametag;
     public TMP_Text MAINUI_speedText;
 	public TMP_Text MAINUI_nameText;
@@ -44,8 +40,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public TMP_Text MAINUI_fpsText;
 	public TMP_Text MAINUI_timerText;
 	public Image MAINUI_cameraNoise;
-	public RawImage VR_leftEye;
-	public RawImage VR_rightEye;
 	#endregion 
 	#region Trails
 	private TrailRenderer trailRenderer;
@@ -116,7 +110,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		allUI.SetActive(false);
 		if (view.IsMine)
 		{
-			vrRendTexture = (RenderTexture)Resources.Load("VR_RenderTexture");
+            playerSettings = (PlayerSettings)Resources.Load("DefaultPlayerSettings");
+
             rb = transform.AddComponent<Rigidbody>();
 			rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			Destroy(nametag.gameObject);
@@ -149,13 +144,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			view.RPC("SetName", RpcTarget.AllBufferedViaServer, "Player" + $"{view.ViewID}");
 			//Move to spawn
 			transform.position = GameManager.instance.levelRules.spawn;
-			//Setup VR
-			if (vrEnabled) { EnableVr(); }
-			else { DisableVr(); }
+
+
+			SetOsdElementsToOsdElementDatas();
 		}
 		else
 		{
-			Destroy(mainUICanvas.gameObject);
+			Destroy(osdParent.gameObject);
 			Destroy(GetComponentInChildren<Camera>().gameObject);
 			Destroy(rb);
 		}
@@ -166,16 +161,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			HandleGroundEffect();
             HandleHudUI();
 			positionLastFrame = transform.position;
-			if (vrEnabled && vrEditMode)
-			{
-				HandleVrEditMode();
-			}
-			else
-			{
-                ApplyForces();
-            }
+            ApplyForces();
+
         }
-	}
+    }
 	private void Update()
 	{
 		if (view.IsMine && drone != null) {
@@ -338,11 +327,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
             drone.propellors[i].transform.localEulerAngles = drone.propellors[i].transform.localEulerAngles+drone.propAxis*amount;
 		}
 	}
-	public void HandleVrEditMode() {
-		if (!vrEditMode || !vrEnabled) { return; }
-        if (InputManager.instance.directionalInputs.x != 0f || InputManager.instance.directionalInputs.z != 0) { ChangeVrEyePos(new Vector2(-InputManager.instance.directionalInputs.z, InputManager.instance.directionalInputs.x)); }
-        if (InputManager.instance.directionalInputs.y != 0f) { ChangeVrEyeSize(InputManager.instance.directionalInputs.y / 300f); }
-    }
+
 
 	public void Respawn()
 	{
@@ -375,6 +360,33 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	}
     #endregion
     #region UI
+	//Set OSD UI elements to the values we have saved for them in playersettings
+    public void SetOsdElementsToOsdElementDatas()
+    {
+        OSD_Element[] OSD_Elements = osdParent.GetComponentsInChildren<OSD_Element>();
+        Debug.Log($"OSD {OSD_Elements.Length},{playerSettings.allOsdElemDatas.Length}");
+
+        for (int i = 0; i < OSD_Elements.Length; i++)
+        {
+            for (int j = 0; j < playerSettings.allOsdElemDatas.Length; j++)
+            {
+
+                if (playerSettings.allOsdElemDatas[j].elementName == OSD_Elements[i].elementName)
+                {
+                    Debug.Log($"Moving OSD element {playerSettings.allOsdElemDatas[j].elementName},{OSD_Elements[i].elementName}");
+					//Set positions
+                    ((RectTransform)OSD_Elements[i].transform).anchoredPosition= playerSettings.allOsdElemDatas[j].position;
+                    OSD_Elements[i].transform.localScale = playerSettings.allOsdElemDatas[j].scale;
+
+					//OSD_Elements[i].gameObject.SetActive(playerSettings.allOsdElemDatas[j].elementEnabled); Dont do this because GetComponentsInChildren<OSD_Element>() wont return objects that are set to inactive
+					bool showElement = playerSettings.allOsdElemDatas[j].elementEnabled;
+					//Enable/disable the OSD elements text or image component
+                    if (OSD_Elements[i].transform.TryGetComponent(out Image image)) { image.enabled = showElement; }
+                    else if (OSD_Elements[i].transform.TryGetComponent(out TMP_Text text)) { text.enabled = showElement; }
+                }
+            }
+        }
+    }
     void HandleHudUI()
     {
         MAINUI_speedText.text = $"m/s {((transform.position - positionLastFrame).magnitude / Time.fixedDeltaTime):F1}";
@@ -388,54 +400,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     }
 
 	#endregion
-	#region VR
-	public void ChangeVrEyePos(Vector2 amount)
-	{
-		VR_rightEye.transform.Translate(VR_rightEye.transform.right * amount.x);
-		VR_rightEye.transform.Translate(VR_rightEye.transform.up * amount.y);
-		VR_leftEye.transform.Translate(-VR_leftEye.transform.right * amount.x);
-		VR_leftEye.transform.Translate(VR_leftEye.transform.up * amount.y);
-
-        SettingsManager.instance.playerSettings.eyePosition = VR_rightEye.transform.localPosition;
-
-    }
-    public void ChangeVrEyeSize(float amount)
-    {
-		VR_rightEye.transform.localScale += Vector3.one * amount;
-        VR_leftEye.transform.localScale += Vector3.one * amount;
-
-		SettingsManager.instance.playerSettings.eyeSize = VR_rightEye.transform.localScale;
-    }
-	public void SetVrDefaults()
-	{
-		Vector3 pos = SettingsManager.instance.playerSettings.eyePosition;
-        VR_rightEye.transform.localPosition = pos;
-        VR_leftEye.transform.localPosition = new Vector3(-pos.x, pos.y, pos.z);//Flip offset for left side
-        VR_rightEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
-        VR_leftEye.transform.localScale = SettingsManager.instance.playerSettings.eyeSize;
-    }
-	public void EnableVr()
-	{
-		vrEnabled = true;
-        vrCanvas.gameObject.SetActive(true);
-        vrCanvas.enabled = true;
-		playerCamera.targetTexture = vrRendTexture;
-        mainUICanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        mainUICanvas.worldCamera = playerCamera;
-        mainUICanvas.planeDistance = 0.5f;
-		SetVrDefaults();
-		vrEditMode = true;
-    }
-    public void DisableVr()
-    {
-        vrEnabled = false;
-		vrEditMode = false;
-        vrCanvas.gameObject.SetActive(false);
-		vrCanvas.enabled = false;
-        playerCamera.targetTexture = null;
-		mainUICanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-    }
-    #endregion
+	
 
     private void OnCollisionEnter(Collision collision)
     {

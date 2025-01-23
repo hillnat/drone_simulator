@@ -15,6 +15,7 @@ public class InputManager : MonoBehaviour
     public bool setSpawn = false;
     public bool flip = false;
     public bool toggleChat = false;
+    public bool mouse1 = false;
     public Vector2 mousePosition=Vector2.zero;
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class InputManager : MonoBehaviour
         if(setSpawn) { setSpawn = false; }
         if(flip) { flip = false; }
         if(toggleChat) { toggleChat = false; }
+        if(mouse1) { mouse1 = false; }
     }
     private void OnXYZ(InputValue iv)
     {
@@ -49,7 +51,7 @@ public class InputManager : MonoBehaviour
     private void OnThrottle(InputValue iv)
     {
         float f = iv.Get<float>();
-        throttleInput = Mathf.Clamp01((f + 1f) / 2f);
+        throttleInput = Mathf.Clamp01((f + 1f) / 2f);//Scale from -1 - 1 to 0 - 1
     }
     private void OnRespawn() { respawn = true; }
     private void OnToggleSkyCam() { toggleSkycam = true; }
@@ -61,8 +63,5 @@ public class InputManager : MonoBehaviour
     private void OnSetRespawn() { setSpawn = true; }
     private void OnFlip() { flip = true; }
     private void OnToggleChat() { toggleChat = true; }
-    private void OnVR_Edit()
-    {
-        GameManager.instance.localPlayer.vrEditMode = !GameManager.instance.localPlayer.vrEditMode;
-    }
+    private void OnMouse1() { mouse1 = true; }
 }

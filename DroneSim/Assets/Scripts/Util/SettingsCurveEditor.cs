@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public enum PairableCurves
 {
-    PitchRoll,Yaw,Throttle
+    Pitch,Roll,Yaw,Throttle
 }
 public class SettingsCurveEditor : MonoBehaviour
 {
@@ -99,9 +99,13 @@ public class SettingsCurveEditor : MonoBehaviour
     {
         switch (pairedCurve)
         {
-            case PairableCurves.PitchRoll:
-                curve = SettingsManager.instance.playerSettings.pitchRollCurve;
-                label.text = "Pitch & Roll";
+            case PairableCurves.Pitch:
+                curve = SettingsManager.instance.playerSettings.pitchCurve;
+                label.text = "Pitch";
+                break;
+            case PairableCurves.Roll:
+                curve = SettingsManager.instance.playerSettings.rollCurve;
+                label.text = "Roll";
                 break;
             case PairableCurves.Yaw:
                 curve = SettingsManager.instance.playerSettings.yawCurve;
@@ -118,8 +122,8 @@ public class SettingsCurveEditor : MonoBehaviour
     public void UICALLBACK_ChangePairedCurve(int c)
     {
         pairedCurve++;
-        if ((int)pairedCurve >= 3) { pairedCurve = (PairableCurves)0; }
-        else if ((int)pairedCurve < 0) { pairedCurve = (PairableCurves)2; }
+        if ((int)pairedCurve >= 4) { pairedCurve = (PairableCurves)0; }
+        else if ((int)pairedCurve < 0) { pairedCurve = (PairableCurves)3; }
         UpdatePairedCurve();
         UpdateVisualKeys();//align keys to what the anim curve has
     }

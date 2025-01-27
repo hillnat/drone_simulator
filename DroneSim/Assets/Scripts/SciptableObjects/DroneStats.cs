@@ -2,7 +2,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "DroneStats", menuName = "Create DroneStats", order = 1)]
 public class DroneStats : ScriptableObject
 {
-    public float weight = 800;
+    public float fakeGravity = 800;
+    public float mass = 800;
     public float drag = 0.6f;
     public float angularDrag = 15;
     public float throttleModifier = 50;

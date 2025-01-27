@@ -1,12 +1,15 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 
 public class SettingsManager : MonoBehaviour
@@ -43,7 +46,18 @@ public class SettingsManager : MonoBehaviour
 	private void Start()
 	{
 		SetupOsdEditPanel();
-	}
+
+
+        PopulateJoysticks();
+        PopulateInputActions();
+
+        joystickDropdown.onValueChanged.AddListener(OnJoystickSelected);
+        axisOrButtonDropdown.onValueChanged.AddListener(OnAxisOrButtonSelected);
+        inputActionDropdown.onValueChanged.AddListener(OnInputActionSelected);
+        bindButton.onClick.AddListener(BindInput);
+
+        StartListeningForJoystickInput();
+    }
 	#endregion
 	public void ToggleUI()
 	{
@@ -165,5 +179,151 @@ public class SettingsManager : MonoBehaviour
 		PhotonNetwork.LeaveRoom();
 		SceneManager.LoadScene("Menu");
 	}
-	#endregion
+    #endregion
+
+    #region Keybinds
+    [Header("UI Elements")]
+    public TMP_Dropdown joystickDropdown;
+    public TMP_Dropdown axisOrButtonDropdown;
+    public TMP_Dropdown inputActionDropdown;
+    public Button bindButton;
+    public TMP_Text statusText;
+
+    [Header("Input Action Settings")]
+    public InputActionAsset inputActionAsset;
+
+    private string selectedJoystick;
+    private string selectedAxisOrButton;
+    private InputAction selectedInputAction;
+
+    private void PopulateJoysticks()
+    {
+        joystickDropdown.ClearOptions();
+        var joysticks = Joystick.all.Select(j => j.name).ToList();
+
+        if (joysticks.Count > 0)
+        {
+            joystickDropdown.AddOptions(joysticks);
+            selectedJoystick = joysticks[0];
+            PopulateAxisOrButtons();
+        }
+        else
+        {
+            joystickDropdown.AddOptions(new[] { "No Joysticks Connected" }.ToList());
+            selectedJoystick = null;
+        }
+    }
+
+    private void PopulateAxisOrButtons()
+    {
+        if (selectedJoystick == null) return;
+
+        axisOrButtonDropdown.ClearOptions();
+        var joystick = Joystick.all.FirstOrDefault(j => j.name == selectedJoystick);
+
+        if (joystick != null)
+        {
+            var options = joystick.allControls.Select(c => c.name).ToList();
+            axisOrButtonDropdown.AddOptions(options);
+            selectedAxisOrButton = options[0];
+        }
+    }
+
+    private void PopulateInputActions()
+    {
+        inputActionDropdown.ClearOptions();
+        if (inputActionAsset == null) return;
+
+        var actions = inputActionAsset.actionMaps
+            .SelectMany(map => map.actions)
+            .Select(action => action.name)
+            .ToList();
+
+        if (actions.Count > 0)
+        {
+            inputActionDropdown.AddOptions(actions);
+            selectedInputAction = inputActionAsset.FindAction(actions[0]);
+        }
+    }
+
+    private void OnJoystickSelected(int index)
+    {
+        selectedJoystick = joystickDropdown.options[index].text;
+        PopulateAxisOrButtons();
+    }
+
+    private void OnAxisOrButtonSelected(int index)
+    {
+        selectedAxisOrButton = axisOrButtonDropdown.options[index].text;
+    }
+
+    private void OnInputActionSelected(int index)
+    {
+        var actionName = inputActionDropdown.options[index].text;
+        selectedInputAction = inputActionAsset.FindAction(actionName);
+    }
+
+    private void BindInput()
+    {
+        if (selectedJoystick == null || string.IsNullOrEmpty(selectedAxisOrButton) || selectedInputAction == null)
+        {
+            statusText.text = "Please select a joystick, input, and action to bind.";
+            return;
+        }
+
+        var joystick = Joystick.all.FirstOrDefault(j => j.name == selectedJoystick);
+        if (joystick == null)
+        {
+            statusText.text = "Selected joystick is no longer connected.";
+            return;
+        }
+
+        var control = joystick.allControls.FirstOrDefault(c => c.name == selectedAxisOrButton);
+        if (control == null)
+        {
+            statusText.text = "Selected control is invalid.";
+            return;
+        }
+
+        // Bind the control to the selected InputAction
+        selectedInputAction.ApplyBindingOverride(new InputBinding
+        {
+            path = control.path
+        });
+
+        statusText.text = $"Bound {selectedAxisOrButton} from {selectedJoystick} to {selectedInputAction.name}";
+    }
+
+    private void StartListeningForJoystickInput()
+    {
+        if (Joystick.all.Count == 0)
+        {
+            statusText.text = "No joystick connected to listen to.";
+            return;
+        }
+
+        var joystick = Joystick.all.FirstOrDefault(j => j.name == selectedJoystick);
+        if (joystick == null)
+        {
+            statusText.text = "Selected joystick is not available.";
+            return;
+        }
+
+        InputSystem.onEvent += (inputEvent, device) =>
+        {
+            if (device != joystick) return;
+
+            foreach (var control in joystick.allControls)
+            {
+                if (control.IsPressed())
+                {
+                    selectedAxisOrButton = control.name;
+                    //axisOrButtonDropdown.value = axisOrButtonDropdown.options.FindIndex(option => option.text == selectedAxisOrButton);
+                    statusText.text = $"Detected input: {selectedAxisOrButton}";
+                    break;
+                }
+            }
+        };
+    }
+    #endregion
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78a355fb1381465409e81a2cd2880f0b, type: 3}
   m_Name: DefaultPlayerSettings
   m_EditorClassIdentifier: 
-  cameraAngle: -20
+  cameraAngle: -25
   throttleCurve:
     serializedVersion: 2
     m_Curve:
@@ -37,27 +37,78 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pitchRollCurve:
+  pitchCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.24258775
-      outSlope: 0.24258775
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.0583333
+      outWeight: 0
     - serializedVersion: 3
-      time: 0.34412244
-      value: 0.17173082
-      inSlope: 1.0686462
-      outSlope: 1.0686462
+      time: 0.7022205
+      value: 0.47936457
+      inSlope: 2.2551496
+      outSlope: 2.2551496
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.06119527
+      outWeight: 0.10680701
+    - serializedVersion: 3
+      time: 0.8992867
+      value: 0.8556124
+      inSlope: 1.6806585
+      outSlope: 1.6806585
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15273276
+      outWeight: 0.5045411
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.7022205
+      value: 0.47936457
+      inSlope: 2.2551496
+      outSlope: 2.2551496
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.10680701
+    - serializedVersion: 3
+      time: 0.8992867
+      value: 0.8556124
+      inSlope: 1.6806585
+      outSlope: 1.6806585
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15273276
+      outWeight: 0.5045411
     - serializedVersion: 3
       time: 1
       value: 1
@@ -83,6 +134,24 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.7022205
+      value: 0.47936457
+      inSlope: 2.2551496
+      outSlope: 2.2551496
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.10680701
+    - serializedVersion: 3
+      time: 0.8992867
+      value: 0.8556124
+      inSlope: 1.6806585
+      outSlope: 1.6806585
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15273276
+      outWeight: 0.5045411
+    - serializedVersion: 3
       time: 1
       value: 1
       inSlope: 0
@@ -94,8 +163,37 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  angleModeMaxAngle: 75
+  angleModeMaxAngle: 83
   masterVolume: 0.8
   soundFxVolume: 1
   eyeSize: {x: 0.35, y: 0.35, z: 0.35}
   eyePosition: {x: -700, y: 0, z: 0}
+  allOsdElemDatas:
+  - elementName: speed
+    elementEnabled: 1
+    position: {x: 500, y: -400}
+    scale: {x: 1, y: 1}
+  - elementName: altitude
+    elementEnabled: 1
+    position: {x: 500, y: -430}
+    scale: {x: 1, y: 1}
+  - elementName: horizonLine
+    elementEnabled: 0
+    position: {x: 0, y: 0}
+    scale: {x: 1, y: 1}
+  - elementName: crosshair
+    elementEnabled: 1
+    position: {x: 0, y: 0}
+    scale: {x: 0.7, y: 0.4}
+  - elementName: timer
+    elementEnabled: 1
+    position: {x: -800, y: -200}
+    scale: {x: 1, y: 1}
+  - elementName: name
+    elementEnabled: 1
+    position: {x: 0, y: -500}
+    scale: {x: 1, y: 1}
+  - elementName: fps
+    elementEnabled: 1
+    position: {x: 900, y: 500}
+    scale: {x: 1, y: 1}

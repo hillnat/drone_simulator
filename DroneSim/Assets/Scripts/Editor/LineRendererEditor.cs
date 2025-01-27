@@ -6,13 +6,13 @@ public class LineRendererEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        // Draw the default inspector first
+        //Draw the default inspector first
         DrawDefaultInspector();
 
-        // Get the LineRenderer component
+        //Get the LineRenderer component
         LineRenderer lineRenderer = (LineRenderer)target;
 
-        // Add a custom button to the inspector
+        //Add a custom button to the inspector
         if (GUILayout.Button("Update Positions from Children"))
         {
             UpdateLineRendererPositions(lineRenderer);
@@ -21,10 +21,10 @@ public class LineRendererEditor : Editor
 
     private void UpdateLineRendererPositions(LineRenderer lineRenderer)
     {
-        // Get the transform of the object the LineRenderer is attached to
+        //Get the transform of the object the LineRenderer is attached to
         Transform parentTransform = lineRenderer.transform;
 
-        // Count the number of child objects
+        //Count the number of child objects
         int childCount = parentTransform.childCount;
 
         if (childCount == 0)
@@ -33,17 +33,18 @@ public class LineRendererEditor : Editor
             return;
         }
 
-        // Create an array to store the positions of the child objects
-        Vector3[] positions = new Vector3[childCount];
+        //Create an array to store the positions of the child objects
+        Vector3[] positions = new Vector3[childCount+1];
 
-        // Populate the array with the local positions of the child objects
+        //Populate the array with the local positions of the child objects
         for (int i = 0; i < childCount; i++)
         {
             positions[i] = parentTransform.GetChild(i).position;
         }
+        positions[childCount] = parentTransform.GetChild(0).position;
 
-        // Set the positions on the LineRenderer
-        lineRenderer.positionCount = childCount;
+        //Set the positions on the LineRenderer
+        lineRenderer.positionCount = childCount+1;
         lineRenderer.SetPositions(positions);
 
         Debug.Log("LineRenderer positions updated based on child objects.");

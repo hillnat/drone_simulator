@@ -28,7 +28,7 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         if(respawn) { respawn = false; }
         if(toggleSkycam) { toggleSkycam = false; }

@@ -174,7 +174,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			HandleOtherInputs();
 			MAINUI_fpsText.text = $"{(int)(1f / Time.deltaTime)} FPS";
 			if (timerActive) { timer += Time.deltaTime; }
-		}
+
+            rb.mass = drone.droneStats.mass;
+            rb.drag = drone.droneStats.drag;
+            rb.angularDrag = drone.droneStats.angularDrag;
+            playerCamera.fieldOfView = drone.droneStats.fieldOfView;
+        }
 	}
 	#endregion
     #region RPCs
@@ -196,7 +201,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (view.IsMine)
         {
             playerCamera.enabled = true;
-            rb.mass = drone.droneStats.weight / 40f / 1000f;//Kg to g, divided by a constant of 40 so a normal drone weight of 400g is a good weight for the rb
+			rb.mass = drone.droneStats.mass;
             rb.drag = drone.droneStats.drag;
             rb.angularDrag = drone.droneStats.angularDrag;
             rb.useGravity = true;
@@ -236,7 +241,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	#endregion
 	public void HandleGroundEffect()
 	{
-        groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.75f, groundEffectLayerMask);
+        groundEffect = Physics.Raycast(transform.position, -Vector3.up, 0.1f, groundEffectLayerMask);
 		if (groundEffect && GameManager.instance.time > lastGroundEffectParticlesSpawnTime + 0.5f) {
 			lastGroundEffectParticlesSpawnTime = GameManager.instance.time;
             Instantiate(groundEffectParticles, transform.position, Quaternion.identity, null);
@@ -275,9 +280,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
         //Evaluate on curve
         scaledInputs = new Vector4(
-			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.x)) * drone.droneStats.pitchRollModifier, 			
+			playerSettings.pitchCurve.Evaluate(Mathf.Abs(rawInputs.x)) * drone.droneStats.pitchRollModifier, 			
 			playerSettings.yawCurve.Evaluate(Mathf.Abs(rawInputs.y)) * drone.droneStats.yawSpeedModifier, 
-			playerSettings.pitchRollCurve.Evaluate(Mathf.Abs(rawInputs.z)) * drone.droneStats.pitchRollModifier,
+			playerSettings.rollCurve.Evaluate(Mathf.Abs(rawInputs.z)) * drone.droneStats.pitchRollModifier,
             playerSettings.throttleCurve.Evaluate(rawInputs.w) * drone.droneStats.throttleModifier * GameManager.instance.levelRules.globalSpeedModifier);
 
 
@@ -315,7 +320,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         //Apply throttle
         rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
         //fake more gravity
-        rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.weight/550f) * Time.fixedDeltaTime);
+        rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.fakeGravity) * Time.fixedDeltaTime);
 
 	}
 	private void SpinPropellors()

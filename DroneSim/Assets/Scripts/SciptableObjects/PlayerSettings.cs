@@ -12,7 +12,8 @@ public class PlayerSettings : ScriptableObject
     public enum SpeedUnits { metersPerSecond, kilometersPerHour, feetPerSecond, milesPerHour }
     public float cameraAngle = -25;
     public AnimationCurve throttleCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
-    public AnimationCurve pitchRollCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
+    public AnimationCurve pitchCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
+    public AnimationCurve rollCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
     public AnimationCurve yawCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
     public float angleModeMaxAngle = 75f;
     public float masterVolume = 1f;
@@ -20,7 +21,6 @@ public class PlayerSettings : ScriptableObject
     public Vector3 eyeSize = Vector3.one;
     public Vector3 eyePosition = Vector3.zero;
 
-    [DoNotSerialize]
     public OsdElementData[] allOsdElemDatas = new OsdElementData[7]{ 
         new OsdElementData("speed", true, new Vector2(500f, -400f), new Vector2(1f, 1f)),
         new OsdElementData("altitude", true, new Vector2(500f, -430f), new Vector2(1f, 1f)),
@@ -31,6 +31,7 @@ public class PlayerSettings : ScriptableObject
         new OsdElementData("fps", true, new Vector2(1000, 900), new Vector2(1f, 1f))
     };
 }
+[Serializable]
 public struct OsdElementData
 {
     public string elementName;

@@ -50,13 +50,19 @@ MonoBehaviour:
   respawn: 0
   toggleSkycam: 0
   toggleTrail: 0
-  trailColor: 0
+  color: 0
   clickUp: 0
   openMenu: 0
   setSpawn: 0
   flip: 0
   toggleChat: 0
+  mouse1: 0
+  mouse1Hold: 0
+  mouse2Hold: 0
+  focus: 0
   mousePosition: {x: 0, y: 0}
+  mouseDelta: {x: 0, y: 0}
+  scrollDelta: {x: 0, y: 0}
 --- !u!114 &6372155515829310116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,6 +90,6 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Default
+  m_DefaultActionMap: LevelEditor
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

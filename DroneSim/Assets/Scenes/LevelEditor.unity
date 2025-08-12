@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 2e35ff00d9ed4594a8b58c55428f9ac3, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -229,10 +228,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputManager
       objectReference: {fileID: 0}
-    - target: {fileID: 6372155515829310116, guid: caf281116b5c41e47895a74edd63ec46, type: 3}
-      propertyPath: m_DefaultActionMap
-      value: 1a44e753-d2f2-4570-8cb8-5e10cbe4cb77
-      objectReference: {fileID: 0}
     - target: {fileID: 8383989133837645218, guid: caf281116b5c41e47895a74edd63ec46, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -313,8 +308,8 @@ Camera:
   m_GameObject: {fileID: 979699224}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.26900142, g: 0.6132076, b: 0.5802837, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -456,13 +451,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7580051398651446204, guid: fe13c757da594f8469d2a7adb820a900, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -681
+    - target: {fileID: 1670296021559532543, guid: fe13c757da594f8469d2a7adb820a900, type: 3}
+      propertyPath: m_Name
+      value: SelectedObjectDropdown
       objectReference: {fileID: 0}
-    - target: {fileID: 7580051398651446204, guid: fe13c757da594f8469d2a7adb820a900, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 137
+    - target: {fileID: 6823338333244490148, guid: fe13c757da594f8469d2a7adb820a900, type: 3}
+      propertyPath: m_text
+      value: Selected Object
       objectReference: {fileID: 0}
     - target: {fileID: 7807046614814521242, guid: fe13c757da594f8469d2a7adb820a900, type: 3}
       propertyPath: m_Name

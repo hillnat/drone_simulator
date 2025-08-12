@@ -16,7 +16,11 @@ public class InputManager : MonoBehaviour
     public bool flip = false;
     public bool toggleChat = false;
     public bool mouse1 = false;
+    public bool mouse1Hold = false;
+    public bool mouse2Hold = false;
     public Vector2 mousePosition=Vector2.zero;
+    public Vector2 mouseDelta=Vector2.zero;
+    public Vector2 scrollDelta=Vector2.zero;
     private void Awake()
     {
         if (instance == null)
@@ -41,6 +45,11 @@ public class InputManager : MonoBehaviour
         if(toggleChat) { toggleChat = false; }
         if(mouse1) { mouse1 = false; }
     }
+    private void Update()
+    {
+        scrollDelta = Input.mouseScrollDelta;
+        mouseDelta = Mouse.current.delta.ReadValue();
+    }
     private void OnXYZ(InputValue iv)
     {
         directionalInputs = iv.Get<Vector3>();
@@ -64,4 +73,6 @@ public class InputManager : MonoBehaviour
     private void OnFlip() { flip = true; }
     private void OnToggleChat() { toggleChat = true; }
     private void OnMouse1() { mouse1 = true; }
+    private void OnMouse1Hold(InputValue iv) { mouse1Hold = iv.Get<float>()>0; }
+    private void OnMouse2Hold(InputValue iv) { mouse2Hold = iv.Get<float>()>0; }
 }

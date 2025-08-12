@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	public List<float> timerLaps = new List<float>();
 	private string timerLapsText="";
 	public Hoop lastHoopHit;
-
+	public float GetCurrentSpeed => ((transform.position - positionLastFrame).magnitude / Time.fixedDeltaTime);//Meters per second
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
@@ -160,9 +160,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 		if (view.IsMine && drone!=null) {
 			HandleGroundEffect();
             HandleHudUI();
-			positionLastFrame = transform.position;
             ApplyForces();
-
+            positionLastFrame = transform.position;
         }
     }
 	private void Update()
@@ -317,8 +316,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
 			default:
 				break;
 		}
-        //Apply throttle
-        rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
+		//Apply throttle
+		Debug.Log(GetCurrentSpeed);
+		if (GetCurrentSpeed < drone.droneStats.maxSpeed)
+		{
+			rb.AddForce(transform.up * scaledInputs.w * (groundEffect ? GameManager.instance.levelRules.groundEffectMultiplier : 1f) * Time.fixedDeltaTime);
+		}
         //fake more gravity
         rb.AddForce(Vector3.down * GameManager.instance.levelRules.additionalGravity * (drone.droneStats.fakeGravity) * Time.fixedDeltaTime);
 
@@ -327,7 +330,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 	{
 		for (int i = 0; i < drone.propellors.Length; i++) {
 			bool even = i%2 == 0;//Flip every other prop
-			float amount = 6000 * Time.deltaTime * (InputManager.instance.throttleInput + 3) * (even?1f:-1f);
+			float amount = 9000 * Time.deltaTime * (InputManager.instance.throttleInput + 3) * (even?1f:-1f);
 
             drone.propellors[i].transform.localEulerAngles = drone.propellors[i].transform.localEulerAngles+drone.propAxis*amount;
 		}
@@ -394,7 +397,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     }
     void HandleHudUI()
     {
-        MAINUI_speedText.text = $"m/s {((transform.position - positionLastFrame).magnitude / Time.fixedDeltaTime):F1}";
+        MAINUI_speedText.text = $"m/s {GetCurrentSpeed:F1}";
         MAINUI_altitudeText.text = $"alt {transform.position.y:F1}m";
         MAINUI_timerText.text = $"t {timer:F3}\n"+timerLapsText;
         horizonLinesParent.position = playerCamera.WorldToScreenPoint(GetHorizonPoint());

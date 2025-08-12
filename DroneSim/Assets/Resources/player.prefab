@@ -1146,7 +1146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angleModeRate: 5
-  flightModes: 1
+  flightModes: 0
   drone: {fileID: 0}
   view: {fileID: 6406253602984221751}
   playerCamera: {fileID: 0}

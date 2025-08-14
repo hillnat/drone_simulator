@@ -779,6 +779,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Focus",
+                    "type": "Button",
+                    "id": "a6081d85-ff72-4b0e-af3e-8bc2c0d42e6d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Mouse1Hold",
                     "type": "Value",
                     "id": "6668b7a0-c8eb-4a78-813e-3c9c8e169967",
@@ -1163,6 +1172,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Mouse2Hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "650d0770-f666-429c-8085-e4ff153c7f96",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Focus",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

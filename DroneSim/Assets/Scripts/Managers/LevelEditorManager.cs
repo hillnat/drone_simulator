@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelEditorManager : MonoBehaviour
 {
@@ -24,36 +25,55 @@ public class LevelEditorManager : MonoBehaviour
     public TMP_InputField scaleY_InspectorInputField;
     public TMP_InputField scaleZ_InspectorInputField;
     public TMP_Text cameraSpeedText;
+    public Button createObjectButton;
+    public Button reloadAllButton;
     Coroutine fadeCameraSpeedTextCoroutine;
-    void Start()
+    private void SetupUiCallbacks()
     {
-        objectOptionsDropdown.ClearOptions();
-        Object[] allMeshes = Resources.LoadAll("LevelEditor/Objects");
-        for (int i = 0; i < allMeshes.Length; i++)
-        {
-            TMP_Dropdown.OptionData newOption = new TMP_Dropdown.OptionData(allMeshes[i].name);
-            objectOptionsDropdown.options.Add(newOption);
-        }
-        Debug.Log($"Found {allMeshes.Length} Level Editor Objects");
-        RefreshCurrentObjectsDropdown();
+        currentObjectsDropdown.onValueChanged.RemoveAllListeners();
+        currentObjectsDropdown.onValueChanged.AddListener(delegate { SetInspectorToSelectedObject(); });
+        currentObjectsDropdown.onValueChanged.AddListener(delegate { SetSelectedObjectToDropdownValue(); });
+
+        createObjectButton.onClick.RemoveAllListeners();
+        createObjectButton.onClick.AddListener(delegate { CreateObject(); });
+
+        reloadAllButton.onClick.RemoveAllListeners();
+        reloadAllButton.onClick.AddListener(delegate { ReloadAll(); });
 
 
-        RefreshCameraSpeedText();
 
-        //Debug.Log(Application.persistentDataPath);
-        SetInspectorToSelectedObject();
+        positionX_InspectorInputField.onValueChanged.RemoveAllListeners();
+        positionY_InspectorInputField.onValueChanged.RemoveAllListeners();
+        positionZ_InspectorInputField.onValueChanged.RemoveAllListeners();
+        rotationX_InspectorInputField.onValueChanged.RemoveAllListeners();
+        rotationY_InspectorInputField.onValueChanged.RemoveAllListeners();
+        rotationZ_InspectorInputField.onValueChanged.RemoveAllListeners();
+        scaleX_InspectorInputField.onValueChanged.RemoveAllListeners();
+        scaleY_InspectorInputField.onValueChanged.RemoveAllListeners();
+        scaleZ_InspectorInputField.onValueChanged.RemoveAllListeners();
+
+        positionX_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        positionY_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        positionZ_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        rotationX_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        rotationY_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        rotationZ_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        scaleX_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        scaleY_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
+        scaleZ_InspectorInputField.onValueChanged.AddListener(delegate { SetSelectedObjectTransformToInspectorValues(); });
     }
-
-    void Update()
+    private void HandleInputs()
     {
-        if (InputManager.instance.mouse1 && 
-            Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit))
+        if (InputManager.instance.mouse1 &&
+           Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
         {
-            LevelEditorObject leo = hit.transform.gameObject.GetComponent<LevelEditorObject>();
+            LevelEditorObject leo = hit.transform.root.gameObject.GetComponent<LevelEditorObject>();
             if (leo != null)
             {
                 currentSelectedObjectIndex = leo.indexInMasterList;
+                SetSelectedObjectDropdownValueToSelectedObject();
             }
+
         }
         if (InputManager.instance.scrollDelta != Vector2.zero)
         {
@@ -83,6 +103,41 @@ public class LevelEditorManager : MonoBehaviour
             Camera.main.transform.Translate(Vector3.right * Time.deltaTime * cameraMoveSpeed * InputManager.instance.directionalInputs.x);
             Camera.main.transform.Translate(Vector3.forward * Time.deltaTime * cameraMoveSpeed * InputManager.instance.directionalInputs.z);
         }
+        if (InputManager.instance.focus)
+        {
+            LevelEditorObject leo = GetSelectedObject();
+            if (leo != null)
+            {
+                Camera.main.transform.position = leo.transform.position + new Vector3(10, 10, 10);
+                Camera.main.transform.LookAt(leo.transform.position);
+            }
+        }
+    }
+    void Start()
+    {
+
+        SetupUiCallbacks();
+
+        objectOptionsDropdown.ClearOptions();
+        Object[] allMeshes = Resources.LoadAll("LevelEditor/Objects");
+        for (int i = 0; i < allMeshes.Length; i++)
+        {
+            TMP_Dropdown.OptionData newOption = new TMP_Dropdown.OptionData(allMeshes[i].name);
+            objectOptionsDropdown.options.Add(newOption);
+        }
+        Debug.Log($"Found {allMeshes.Length} Level Editor Objects");
+        RefreshCurrentObjectsDropdown();
+
+
+        RefreshCameraSpeedText();
+
+        //Debug.Log(Application.persistentDataPath);
+        SetInspectorToSelectedObject();
+    }
+
+    void Update()
+    {
+        HandleInputs();
     }
     
     private LevelEditorObject? GetSelectedObject()
@@ -115,6 +170,7 @@ public class LevelEditorManager : MonoBehaviour
         currentSelectedObjectIndex = newObject.indexInMasterList;
         RefreshCurrentObjectsDropdown();
         SetInspectorToSelectedObject();
+        SetSelectedObjectDropdownValueToSelectedObject();
     }
     public void ReloadAll()
     {
@@ -146,9 +202,16 @@ public class LevelEditorManager : MonoBehaviour
             currentObjectsDropdown.value = currentSelectedObjectIndex;
         }
     }
-    public void SetCurrentItemToDropdown()//Called when current objects list is changed
+    public void SetSelectedObjectToDropdownValue()//Called when current objects list is changed
     {
         currentSelectedObjectIndex = currentObjectsDropdown.value;
+    }
+    public void SetSelectedObjectDropdownValueToSelectedObject()//Called when current objects list is changed
+    {
+        if (currentSelectedObjectIndex > 0)
+        {
+            currentObjectsDropdown.value = currentSelectedObjectIndex;
+        }
     }
     public void SetSelectedObjectTransformToInspectorValues()
     {

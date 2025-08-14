@@ -18,6 +18,7 @@ public class InputManager : MonoBehaviour
     public bool mouse1 = false;
     public bool mouse1Hold = false;
     public bool mouse2Hold = false;
+    public bool focus = false;
     public Vector2 mousePosition=Vector2.zero;
     public Vector2 mouseDelta=Vector2.zero;
     public Vector2 scrollDelta=Vector2.zero;
@@ -44,6 +45,7 @@ public class InputManager : MonoBehaviour
         if(flip) { flip = false; }
         if(toggleChat) { toggleChat = false; }
         if(mouse1) { mouse1 = false; }
+        if(focus) { focus = false; }
     }
     private void Update()
     {
@@ -73,6 +75,7 @@ public class InputManager : MonoBehaviour
     private void OnFlip() { flip = true; }
     private void OnToggleChat() { toggleChat = true; }
     private void OnMouse1() { mouse1 = true; }
+    private void OnFocus() { focus = true; }
     private void OnMouse1Hold(InputValue iv) { mouse1Hold = iv.Get<float>()>0; }
     private void OnMouse2Hold(InputValue iv) { mouse2Hold = iv.Get<float>()>0; }
 }

@@ -236,4 +236,8 @@ public class LevelEditorManager : MonoBehaviour
             yield return new WaitForSeconds(0.015f);
         }
     }
+    public void SaveLevelToJson()
+    {
+        
+    }
 }
